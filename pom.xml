@@ -1,0 +1,94 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.github.juliocesarscheidt</groupId>
+	<artifactId>ecommerce</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>ecommerce</name>
+	<packaging>jar</packaging>
+  
+	<properties>
+		<java.version>12</java.version>
+	    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	</properties>
+
+	<build>
+    	<plugins>
+    		<plugin>
+		        <groupId>org.apache.maven.plugins</groupId>
+   				<artifactId>maven-compiler-plugin</artifactId>
+   				<version>3.10.0</version>
+		        <configuration>
+		          <source>${java.version}</source>
+		          <target>${java.version}</target>
+		        </configuration>
+		      </plugin>
+
+		      <plugin>
+		        <groupId>org.apache.maven.plugins</groupId>
+		        <artifactId>maven-jar-plugin</artifactId>
+		        <version>3.0.2</version>
+		        <configuration>
+		          <archive>
+		            <manifest>
+		              <mainClass>com.github.juliocesarscheidt.ecommerce.NewOrderMain</mainClass>
+		            </manifest>
+		          </archive>
+		        </configuration>
+		      </plugin>
+     
+		      <plugin>
+		        <groupId>org.apache.maven.plugins</groupId>
+		        <artifactId>maven-shade-plugin</artifactId>
+		        <version>3.2.4</version>
+		        <executions>
+		          <execution>
+		            <phase>package</phase>
+		            <goals>
+		              <goal>shade</goal>
+		            </goals>
+		          </execution>
+		        </executions>
+		      </plugin>
+    	</plugins>
+  	
+    	<finalName>app</finalName>
+    </build>
+    
+    <dependencyManagement>
+    	<dependencies></dependencies>
+    </dependencyManagement>
+ 
+	<dependencies>
+		<dependency>
+		    <groupId>org.apache.maven.plugins</groupId>
+		    <artifactId>maven-compiler-plugin</artifactId>
+		    <version>3.10.0</version>
+		</dependency>
+
+		<dependency>
+		    <groupId>org.apache.maven.plugins</groupId>
+		    <artifactId>maven-jar-plugin</artifactId>
+		    <version>3.0.2</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.apache.maven.plugins</groupId>
+		    <artifactId>maven-shade-plugin</artifactId>
+		    <version>3.2.4</version>
+		</dependency>
+
+		<dependency>
+	      <groupId>org.slf4j</groupId>
+	      <artifactId>slf4j-simple</artifactId>
+	      <version>1.7.29</version>
+	    </dependency>
+
+	    <!-- https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients -->
+		<dependency>
+		    <groupId>org.apache.kafka</groupId>
+		    <artifactId>kafka-clients</artifactId>
+		    <version>3.0.0</version>
+		</dependency>
+    </dependencies>
+</project>

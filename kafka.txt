@@ -1,0 +1,37 @@
+
+
+systemctl start zookeeper
+systemctl start kafka
+
+export TOPIC_NAME=ECOMMERCE_NEW_ORDER
+
+export BS='127.0.0.1:9092'
+export ZK='127.0.0.1:2181'
+
+
+kafka-topics --zookeeper $ZK --list
+
+
+kafka-topics --zookeeper $ZK --topic "$TOPIC_NAME" --create --partitions 3 --replication-factor 1 --if-not-exists
+
+kafka-topics --zookeeper $ZK --topic "$TOPIC_NAME" --describe
+
+
+kafka-console-consumer --bootstrap-server "$BS" --topic "$TOPIC_NAME" --property "parse.key=true" --property "print.key=true" --property key.separator=":" --from-beginning
+
+kafka-console-consumer --bootstrap-server "$BS" --topic "$TOPIC_NAME" --property "parse.key=true" --property "print.key=true" --property key.separator=":"
+
+
+
+mvn clean
+
+mvn install -Dmaven.test.skip=true
+
+mvn compile
+
+mvn --batch-mode package --file pom.xml -Dmaven.test.skip=true
+mvn package -Dmaven.test.skip=true
+
+java -jar target\app.jar
+
+
