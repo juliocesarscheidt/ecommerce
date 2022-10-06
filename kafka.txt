@@ -1,25 +1,51 @@
 
 
 systemctl start zookeeper
+journalctl -f --unit zookeeper
+
 systemctl start kafka
+journalctl -f --unit kafka
 
-export TOPIC_NAME=ECOMMERCE_NEW_ORDER
 
-export BS='127.0.0.1:9092'
-export ZK='127.0.0.1:2181'
+export BS="127.0.0.1:9092"
+export ZK="127.0.0.1:2181"
+
+export TOPIC_NAME="ECOMMERCE_NEW_ORDER"
+export TOPIC_NAME="ECOMMERCE_SEND_EMAIL"
 
 
 kafka-topics --zookeeper $ZK --list
 
 
-kafka-topics --zookeeper $ZK --topic "$TOPIC_NAME" --create --partitions 3 --replication-factor 1 --if-not-exists
+kafka-consumer-groups --bootstrap-server "$BS" --list
 
-kafka-topics --zookeeper $ZK --topic "$TOPIC_NAME" --describe
+kafka-consumer-groups --bootstrap-server "$BS" --describe --group "FraudDetectorService"
+kafka-consumer-groups --bootstrap-server "$BS" --describe --group "EmailService"
+kafka-consumer-groups --bootstrap-server "$BS" --describe --group "LogService"
+
+
+
+kafka-topics --zookeeper "$ZK" --topic "$TOPIC_NAME" --create --partitions 1 --replication-factor 1 --if-not-exists
+
+kafka-topics --zookeeper "$ZK" --topic "$TOPIC_NAME" --describe
+
+kafka-topics --zookeeper "$ZK" --topic "$TOPIC_NAME" --alter --partitions 3
+
+
+
+# print number of messages per partition
+kafka-run-class kafka.tools.GetOffsetShell --broker-list "$BS" --topic "$TOPIC_NAME"
 
 
 kafka-console-consumer --bootstrap-server "$BS" --topic "$TOPIC_NAME" --property "parse.key=true" --property "print.key=true" --property key.separator=":" --from-beginning
 
 kafka-console-consumer --bootstrap-server "$BS" --topic "$TOPIC_NAME" --property "parse.key=true" --property "print.key=true" --property key.separator=":"
+
+
+kafka-console-consumer --bootstrap-server "$BS" --topic "$TOPIC_NAME" --group "FraudDetectorService-7e844a78-a3e6-4336-a75b-6bdc6c25b2f6-c1503358-5fc2-4220-94b7-a8c14e1ed1b0" --from-beginning
+
+kafka-consumer-groups --bootstrap-server "$BS" --topic "$TOPIC_NAME" --group "FraudDetectorService-7e844a78-a3e6-4336-a75b-6bdc6c25b2f6-c1503358-5fc2-4220-94b7-a8c14e1ed1b0" --reset-offsets --to-latest --execute
+kafka-consumer-groups --bootstrap-server "$BS" --topic "$TOPIC_NAME" --group "consumer-FraudDetectorService-1-5a58daf1-b075-4cb6-8750-23eee0ef43fd" --reset-offsets --to-latest --execute
 
 
 
@@ -33,5 +59,4 @@ mvn --batch-mode package --file pom.xml -Dmaven.test.skip=true
 mvn package -Dmaven.test.skip=true
 
 java -jar target\app.jar
-
 

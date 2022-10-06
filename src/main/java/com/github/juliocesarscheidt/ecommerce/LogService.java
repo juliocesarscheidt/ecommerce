@@ -1,9 +1,11 @@
 package com.github.juliocesarscheidt.ecommerce;
 
+import java.util.regex.Pattern;
+
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
-public class FraudDetectorService {
-
+public class LogService {
+	
 	private void parse(ConsumerRecord<String, String> record) {
 		System.out.println("[INFO] key " + record.key()
 						  + " | value " + record.value()
@@ -13,10 +15,10 @@ public class FraudDetectorService {
 	}
 
 	public static void main(String[] args) {
-		FraudDetectorService fraudService = new FraudDetectorService();		
-		try (KafkaConsumerService service = new KafkaConsumerService("ECOMMERCE_NEW_ORDER",
-																	fraudService.getClass().getSimpleName(),
-																	fraudService::parse)) {
+		LogService logService = new LogService();
+		try (KafkaConsumerService service = new KafkaConsumerService(Pattern.compile("ECOMMERCE_.*"),
+																	logService.getClass().getSimpleName(),
+																	logService::parse)) {
 			service.run();
 		}
 	}
