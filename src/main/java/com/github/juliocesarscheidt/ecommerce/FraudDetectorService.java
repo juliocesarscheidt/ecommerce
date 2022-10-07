@@ -4,7 +4,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 public class FraudDetectorService {
 
-	private void parse(ConsumerRecord<String, String> record) {
+	private void parse(ConsumerRecord<String, Order> record) {
 		System.out.println("[INFO] key " + record.key()
 						  + " | value " + record.value()
 						  + " | topic " + record.topic()
@@ -14,9 +14,10 @@ public class FraudDetectorService {
 
 	public static void main(String[] args) {
 		FraudDetectorService fraudService = new FraudDetectorService();		
-		try (KafkaConsumerService service = new KafkaConsumerService("ECOMMERCE_NEW_ORDER",
-																	fraudService.getClass().getSimpleName(),
-																	fraudService::parse)) {
+		try (KafkaConsumerService<Order> service = new KafkaConsumerService<>("ECOMMERCE_NEW_ORDER",
+																			fraudService.getClass().getSimpleName(),
+																			fraudService::parse,
+																			Order.class)) {
 			service.run();
 		}
 	}

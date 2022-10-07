@@ -13,21 +13,24 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
-public class KafkaConsumerService implements Closeable {
+public class KafkaConsumerService<T> implements Closeable {
 
-	private final KafkaConsumer<String, String> consumer;
-	private final ConsumerFunction parse;
+	private final KafkaConsumer<String, T> consumer;
+	private final ConsumerFunction<T> parse;
 
-	KafkaConsumerService(String topic, String consumerName, ConsumerFunction parse) {
-		this.consumer = new KafkaConsumer<>(properties(consumerName));
-		this.consumer.subscribe(Collections.singletonList(topic));
+	private KafkaConsumerService(String consumerName, ConsumerFunction<T> parse, Class<T> type) {
+		this.consumer = new KafkaConsumer<>(getProperties(consumerName, type));
 		this.parse = parse;
 	}
 
-	public KafkaConsumerService(Pattern compile, String consumerName, ConsumerFunction parse) {
-		this.consumer = new KafkaConsumer<String, String>(properties(consumerName));
+	public KafkaConsumerService(String topic, String consumerName, ConsumerFunction<T> parse, Class<T> type) {
+		this(consumerName, parse, type);
+		this.consumer.subscribe(Collections.singletonList(topic));
+	}
+
+	public KafkaConsumerService(Pattern compile, String consumerName, ConsumerFunction<T> parse, Class<T> type) {
+		this(consumerName, parse, type);
 		this.consumer.subscribe(compile);
-		this.parse = parse;
 	}
 
 	void run() {
@@ -37,14 +40,14 @@ public class KafkaConsumerService implements Closeable {
 
 		while (true) {
 			try {
-				ConsumerRecords<String, String> records = this.consumer.poll(Duration.ofMillis(millisecondsToPoll));
+				ConsumerRecords<String, T> records = this.consumer.poll(Duration.ofMillis(millisecondsToPoll));
 				if (records.isEmpty()) {
 					System.out.println("Any message found, continuing...");
 					Thread.sleep(1000); // sleep 1 secs
 					continue;
 				}
 
-				for (ConsumerRecord<String, String> record: records) {
+				for (ConsumerRecord<String, T> record: records) {
 			        // buffer.add(record);
 					this.parse.consume(record);
 				}
@@ -63,13 +66,16 @@ public class KafkaConsumerService implements Closeable {
 		}
 	}
 	
-	private Properties properties(String consumerName) {
+	private Properties getProperties(String consumerName, Class<T> type) {
 		var properties = new Properties();
 
 		properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "172.16.0.3:9092");
 
 		properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-		properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+		// properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+		properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, GsonDeserializer.class.getName());
+
+		properties.put(GsonDeserializer.TYPE_CONFIG, type.getName());
 
 	    properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 

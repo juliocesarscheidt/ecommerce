@@ -11,20 +11,20 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
 
-public class KafkaProducerService implements Closeable {
+public class KafkaProducerService<T> implements Closeable {
 
-	private final KafkaProducer<String, String> producer;
+	private final KafkaProducer<String, T> producer;
 
 	KafkaProducerService() {
-		this.producer = new KafkaProducer<>(properties());
+		this.producer = new KafkaProducer<>(getProperties());
 		this.producer.initTransactions();
 	}
 
-	void send(String topic, String key, String value) {
+	void send(String topic, String key, T value) {
 		try {
 			this.producer.beginTransaction();
 
-			var record = new ProducerRecord<String, String>(topic, key, value);
+			var record = new ProducerRecord<>(topic, key, value);
 			System.out.println(record.toString());
 
 			this.producer.send(record, callback()).get();
@@ -50,17 +50,18 @@ public class KafkaProducerService implements Closeable {
 		};
 	}
 
-	private static Properties properties() {
+	private static Properties getProperties() {
 		var properties = new Properties();
 		properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "172.16.0.3:9092");
 
 	    // to send strings we need a string serializer
 		properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-		properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-		
+		// properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+		properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, GsonSerializer.class.getName());
+
 		properties.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
 		properties.put(ProducerConfig.ACKS_CONFIG, "all");
-		
+	
 		properties.put(ProducerConfig.RETRIES_CONFIG, Integer.toString(Integer.MAX_VALUE));
 		properties.put(ProducerConfig.RETRY_BACKOFF_MS_CONFIG, 100);
 		

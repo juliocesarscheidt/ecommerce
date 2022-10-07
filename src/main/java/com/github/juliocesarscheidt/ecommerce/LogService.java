@@ -5,8 +5,8 @@ import java.util.regex.Pattern;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 public class LogService {
-	
-	private void parse(ConsumerRecord<String, String> record) {
+
+	private void parse(ConsumerRecord<String, Object> record) {
 		System.out.println("[INFO] key " + record.key()
 						  + " | value " + record.value()
 						  + " | topic " + record.topic()
@@ -16,9 +16,10 @@ public class LogService {
 
 	public static void main(String[] args) {
 		LogService logService = new LogService();
-		try (KafkaConsumerService service = new KafkaConsumerService(Pattern.compile("ECOMMERCE_.*"),
-																	logService.getClass().getSimpleName(),
-																	logService::parse)) {
+		try (KafkaConsumerService<Object> service = new KafkaConsumerService<>(Pattern.compile("ECOMMERCE_.*"),
+																			logService.getClass().getSimpleName(),
+																			logService::parse,
+																			Object.class)) {
 			service.run();
 		}
 	}

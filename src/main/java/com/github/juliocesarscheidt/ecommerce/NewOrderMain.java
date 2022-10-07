@@ -1,22 +1,31 @@
 package com.github.juliocesarscheidt.ecommerce;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 public class NewOrderMain {
 
 	public static void main(String[] args) {
-		try (KafkaProducerService producer = new KafkaProducerService()) {
-			String topicOrder = "ECOMMERCE_NEW_ORDER";
-			String keyOrder = UUID.randomUUID().toString();
-			String messageOrder = "Hello World";
-			producer.send(topicOrder, keyOrder, messageOrder);
+		KafkaProducerService<Order> orderProducer = new KafkaProducerService<>();
+		KafkaProducerService<Email> emailProducer = new KafkaProducerService<>();
 
-			String topicEmail = "ECOMMERCE_SEND_EMAIL";
-			String keyEmail = UUID.randomUUID().toString();
-			String messageEmail = "Thank you for your order! We are processing your request";
-			producer.send(topicEmail, keyEmail, messageEmail);
+		try {
+			String userId = UUID.randomUUID().toString();
+			String orderId = UUID.randomUUID().toString();
+			BigDecimal orderAmount = new BigDecimal(Math.random() * 5000 + 1);
 
-			producer.close();
+			Order order = new Order(userId, orderId, orderAmount);
+			orderProducer.send("ECOMMERCE_NEW_ORDER", userId, order);
+
+			Email email = new Email(userId, "Thank you for your order " + userId + "! We are processing your request");
+			emailProducer.send("ECOMMERCE_SEND_EMAIL", userId, email);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			
+		} finally {
+			orderProducer.close();
+			emailProducer.close();
 		}
 	}
 }
