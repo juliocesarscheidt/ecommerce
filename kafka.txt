@@ -49,6 +49,14 @@ kafka-consumer-groups --bootstrap-server "$BS" --topic "$TOPIC_NAME" --group "co
 
 
 
+# service-new-order module
+mvn -pl service-new-order -am clean install
+java -jar service-new-order\target\app.jar
+
+
+# all modules
+mvn --projects common-kafka,service-email,service-fraud,service-log,service-new-order --also-make clean package
+
 mvn clean
 
 mvn install -Dmaven.test.skip=true

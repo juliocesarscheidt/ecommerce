@@ -2,10 +2,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.juliocesarscheidt</groupId>
 	<artifactId>ecommerce</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	<name>ecommerce</name>
-	<packaging>jar</packaging>
-  
+	<version>0.0.1-SNAPSHOT</version>
+
+	<packaging>pom</packaging>
+	<!--<packaging>jar</packaging>-->
+
 	<properties>
 		<java.version>12</java.version>
 	    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -24,6 +26,7 @@
 		        </configuration>
 		      </plugin>
 
+			  <!--
 		      <plugin>
 		        <groupId>org.apache.maven.plugins</groupId>
 		        <artifactId>maven-jar-plugin</artifactId>
@@ -36,7 +39,8 @@
 		          </archive>
 		        </configuration>
 		      </plugin>
-     
+		      -->
+
 		      <plugin>
 		        <groupId>org.apache.maven.plugins</groupId>
 		        <artifactId>maven-shade-plugin</artifactId>
@@ -97,4 +101,12 @@
 		    <version>3.0.0</version>
 		</dependency>
     </dependencies>
+
+	<modules>
+		<module>common-kafka</module>
+		<module>service-email</module>
+		<module>service-fraud</module>
+		<module>service-log</module>
+		<module>service-new-order</module>
+	</modules>
 </project>
