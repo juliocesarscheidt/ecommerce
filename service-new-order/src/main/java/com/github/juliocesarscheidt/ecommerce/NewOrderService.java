@@ -3,11 +3,12 @@ package com.github.juliocesarscheidt.ecommerce;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-public class NewOrderMain {
+public class NewOrderService {
+
+	private static final KafkaProducerService<Order> orderProducer = new KafkaProducerService<>();
+	private static final KafkaProducerService<Email> emailProducer = new KafkaProducerService<>();
 
 	public static void main(String[] args) {
-		KafkaProducerService<Order> orderProducer = new KafkaProducerService<>();
-		KafkaProducerService<Email> emailProducer = new KafkaProducerService<>();
 
 		try {
 			String userId = UUID.randomUUID().toString();

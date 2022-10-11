@@ -16,7 +16,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>com.github.juliocesarscheidt.ecommerce.NewOrderMain</mainClass>
+              <mainClass>com.github.juliocesarscheidt.ecommerce.NewOrderService</mainClass>
             </manifest>
           </archive>
         </configuration>

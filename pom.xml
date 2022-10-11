@@ -34,7 +34,7 @@
 		        <configuration>
 		          <archive>
 		            <manifest>
-		              <mainClass>com.github.juliocesarscheidt.ecommerce.NewOrderMain</mainClass>
+		              <mainClass>com.github.juliocesarscheidt.ecommerce.NewOrderService</mainClass>
 		            </manifest>
 		          </archive>
 		        </configuration>
@@ -55,14 +55,14 @@
 		        </executions>
 		      </plugin>
     	</plugins>
-  	
+
     	<finalName>app</finalName>
     </build>
-    
+
     <dependencyManagement>
     	<dependencies></dependencies>
     </dependencyManagement>
- 
+
 	<dependencies>
 		<dependency>
 		    <groupId>org.apache.maven.plugins</groupId>
@@ -108,5 +108,6 @@
 		<module>service-fraud</module>
 		<module>service-log</module>
 		<module>service-new-order</module>
+		<module>service-users</module>
 	</modules>
 </project>

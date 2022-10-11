@@ -49,7 +49,11 @@ public class KafkaConsumerService<T> implements Closeable {
 
 				for (ConsumerRecord<String, T> record: records) {
 			        // buffer.add(record);
-					this.parse.consume(record);
+					try {						
+						this.parse.consume(record);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 
 //				if (buffer.size() >= bufferBatchSize) {

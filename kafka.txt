@@ -12,6 +12,8 @@ export ZK="127.0.0.1:2181"
 
 export TOPIC_NAME="ECOMMERCE_NEW_ORDER"
 export TOPIC_NAME="ECOMMERCE_SEND_EMAIL"
+export TOPIC_NAME="ECOMMERCE_ORDER_REJECTED"
+export TOPIC_NAME="ECOMMERCE_ORDER_APPROVED"
 
 
 kafka-topics --zookeeper $ZK --list
@@ -55,7 +57,7 @@ java -jar service-new-order\target\app.jar
 
 
 # all modules
-mvn --projects common-kafka,service-email,service-fraud,service-log,service-new-order --also-make clean package
+mvn --projects common-kafka,service-email,service-fraud,service-log,service-new-order,service-users --also-make clean package
 
 mvn clean
 
