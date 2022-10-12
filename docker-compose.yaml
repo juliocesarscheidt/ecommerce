@@ -1,0 +1,23 @@
+version: "3.4"
+
+services:
+  mailhog:
+    container_name: mailhog
+    hostname: mailhog
+    image: mailhog/mailhog:v1.0.1
+    ports:
+      - 11025:1025
+      - 18025:8025
+    environment: {}
+    networks:
+      - subnet_0
+    restart: "on-failure"
+    volumes: []
+
+networks:
+  subnet_0:
+    driver: bridge
+
+volumes: {}
+
+secrets: {}

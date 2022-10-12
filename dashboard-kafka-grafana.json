@@ -263,7 +263,7 @@
             "uid": "e6KwQgl7k"
           },
           "exemplar": true,
-          "expr": "sum without(instance)(rate(kafka_server_brokertopicmetrics_messagesin_total{job=\"kafka\",topic!=\"\"}[1m]))",
+          "expr": "sum without(instance, job)(rate(kafka_server_brokertopicmetrics_messagesin_total{topic!=\"\"}[1m]))",
           "interval": "",
           "intervalFactor": 1,
           "legendFormat": "{{topic}}",
@@ -309,10 +309,6 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": {
-        "type": "prometheus",
-        "uid": "e6KwQgl7k"
-      },
       "editable": true,
       "error": false,
       "fill": 1,
@@ -354,7 +350,13 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum without(instance)(rate(kafka_server_brokertopicmetrics_bytesin_total{job=\"kafka\",topic!=\"\"}[5m]))",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "e6KwQgl7k"
+          },
+          "exemplar": true,
+          "expr": "sum without(instance, job)(rate(kafka_server_brokertopicmetrics_bytesin_total{topic!=\"\"}[1m]))",
+          "interval": "",
           "intervalFactor": 2,
           "legendFormat": "{{topic}}",
           "metric": "kafka_server_brokertopicmetrics_bytesin_total",
@@ -399,10 +401,6 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": {
-        "type": "prometheus",
-        "uid": "e6KwQgl7k"
-      },
       "editable": true,
       "error": false,
       "fill": 1,
@@ -444,7 +442,13 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum without(instance)(rate(kafka_server_brokertopicmetrics_bytesout_total{job=\"kafka\",topic!=\"\"}[5m]))",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "e6KwQgl7k"
+          },
+          "exemplar": true,
+          "expr": "sum without(instance, job)(rate(kafka_server_brokertopicmetrics_bytesout_total{topic!=\"\"}[1m]))",
+          "interval": "",
           "intervalFactor": 2,
           "legendFormat": "{{topic}}",
           "metric": "kafka_server_brokertopicmetrics_bytesin_total",
@@ -491,10 +495,6 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": {
-        "type": "prometheus",
-        "uid": "e6KwQgl7k"
-      },
       "editable": true,
       "error": false,
       "fill": 1,
@@ -536,7 +536,13 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(process_cpu_seconds_total{job=\"kafka\"}[1m])",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "e6KwQgl7k"
+          },
+          "exemplar": true,
+          "expr": "rate(process_cpu_seconds_total{}[1m])",
+          "interval": "",
           "intervalFactor": 2,
           "legendFormat": "{{instance}}",
           "metric": "process_cpu_seconds_total",
@@ -583,10 +589,6 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": {
-        "type": "prometheus",
-        "uid": "e6KwQgl7k"
-      },
       "editable": true,
       "error": false,
       "fill": 1,
@@ -628,7 +630,13 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum without(area)(jvm_memory_bytes_used{job=\"kafka\"})",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "e6KwQgl7k"
+          },
+          "exemplar": true,
+          "expr": "sum without(area)(jvm_memory_bytes_used{})",
+          "interval": "",
           "intervalFactor": 2,
           "legendFormat": "{{instance}}",
           "metric": "jvm_memory_bytes_used",
@@ -675,10 +683,6 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": {
-        "type": "prometheus",
-        "uid": "e6KwQgl7k"
-      },
       "editable": true,
       "error": false,
       "fill": 1,
@@ -720,7 +724,13 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum without(gc)(rate(jvm_gc_collection_seconds_sum{job=\"kafka\"}[5m]))",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "e6KwQgl7k"
+          },
+          "exemplar": true,
+          "expr": "sum without(gc)(rate(jvm_gc_collection_seconds_sum{}[5m]))",
+          "interval": "",
           "intervalFactor": 2,
           "legendFormat": "{{instance}}",
           "metric": "jvm_gc_collection_seconds_sum",
@@ -800,6 +810,6 @@
   "timezone": "browser",
   "title": "Kafka LinuxMint",
   "uid": "yrKP7YzVz",
-  "version": 11,
+  "version": 12,
   "weekStart": ""
 }
