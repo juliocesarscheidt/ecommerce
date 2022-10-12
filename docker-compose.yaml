@@ -6,8 +6,8 @@ services:
     hostname: mailhog
     image: mailhog/mailhog:v1.0.1
     ports:
-      - 11025:1025
-      - 18025:8025
+      - 1025:1025
+      - 8025:8025
     environment: {}
     networks:
       - subnet_0
