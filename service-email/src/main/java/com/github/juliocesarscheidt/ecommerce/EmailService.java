@@ -1,18 +1,21 @@
 package com.github.juliocesarscheidt.ecommerce;
 
-import java.util.Properties;
-
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
-import jakarta.mail.Address;
-import jakarta.mail.Authenticator;
-import jakarta.mail.Message;
-import jakarta.mail.MessagingException;
-import jakarta.mail.PasswordAuthentication;
-import jakarta.mail.Session;
-import jakarta.mail.Transport;
-import jakarta.mail.internet.InternetAddress;
-import jakarta.mail.internet.MimeMessage;
+import java.util.Properties;
+
+import javax.mail.Address;
+import javax.mail.Authenticator;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 
 public class EmailService {
 
@@ -26,11 +29,15 @@ public class EmailService {
 	    // props.put("mail.smtp.port", "465");
 	    props.put("mail.smtp.port", "1025");
 
-	    Session session = Session.getDefaultInstance(props, new Authenticator() {
-	    	protected PasswordAuthentication getPasswordAuthentication() {
-        	   return new PasswordAuthentication("", "");
-	    	}
-	    });
+	    Authenticator auth = new Authenticator() {
+            public PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication("", "");
+            }
+        };
+ 
+        // Session session = Session.getInstance(props, auth);
+
+	    Session session = Session.getInstance(props);
 	    session.setDebug(true);
 
 	    try {
@@ -38,13 +45,14 @@ public class EmailService {
 	        message.setFrom(new InternetAddress("sender@mailhog.com"));
 	        Address[] destinationUser = InternetAddress.parse(emailDestination);
 
+	        message.setContent(emailBody, "text/html; charset=utf-8");
+        
 	        message.setRecipients(Message.RecipientType.TO, destinationUser);
-	        message.setSubject("Ecommerce welcome");
-	        message.setText(emailBody);
+	        message.setSubject("Ecommerce welcome email");
 
 	        Transport.send(message);
 
-	        System.out.println("Email sent");
+	        System.out.println("Email sent to " + destinationUser);
 	
 	     } catch (MessagingException e) {
 	    	 throw new RuntimeException(e);
