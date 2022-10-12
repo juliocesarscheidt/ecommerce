@@ -12,9 +12,9 @@ public class NewOrderService {
 
 	public static void main(String[] args) {
 		Faker faker = new Faker();
-		Integer numberOfOrders = Integer.parseInt(args[0]);
-		if (numberOfOrders.equals(null)) {
-			numberOfOrders = 10;
+		Integer numberOfOrders = 10;
+		if (args.length > 0 && !args[0].equals(null)) {
+			numberOfOrders = Integer.parseInt(args[0]);
 		}
 
 		try {

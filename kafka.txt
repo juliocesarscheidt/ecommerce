@@ -7,7 +7,7 @@ systemctl start kafka
 journalctl -f --unit kafka
 
 
-export BS="127.0.0.1:9092"
+export BS="127.0.0.1:9091,127.0.0.1:9092"
 export ZK="127.0.0.1:2181"
 
 export TOPIC_NAME="ECOMMERCE_NEW_ORDER"
@@ -19,19 +19,22 @@ export TOPIC_NAME="ECOMMERCE_ORDER_APPROVED"
 kafka-topics --zookeeper $ZK --list
 
 
-kafka-consumer-groups --bootstrap-server "$BS" --list
-
-kafka-consumer-groups --bootstrap-server "$BS" --describe --group "FraudDetectorService"
-kafka-consumer-groups --bootstrap-server "$BS" --describe --group "EmailService"
-kafka-consumer-groups --bootstrap-server "$BS" --describe --group "LogService"
-
-
-
-kafka-topics --zookeeper "$ZK" --topic "$TOPIC_NAME" --create --partitions 1 --replication-factor 1 --if-not-exists
+# create topics
+kafka-topics --zookeeper "$ZK" --topic "$TOPIC_NAME" --create --partitions 3 --replication-factor 2 --if-not-exists
 
 kafka-topics --zookeeper "$ZK" --topic "$TOPIC_NAME" --describe
 
 kafka-topics --zookeeper "$ZK" --topic "$TOPIC_NAME" --alter --partitions 3
+
+
+
+kafka-consumer-groups --bootstrap-server "$BS" --list
+
+kafka-consumer-groups --bootstrap-server "$BS" --describe --group "CreateUserService"
+kafka-consumer-groups --bootstrap-server "$BS" --describe --group "FraudDetectorService"
+kafka-consumer-groups --bootstrap-server "$BS" --describe --group "EmailService"
+kafka-consumer-groups --bootstrap-server "$BS" --describe --group "LogService"
+
 
 
 

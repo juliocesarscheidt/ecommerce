@@ -26,7 +26,8 @@ public class KafkaProducerService<T> implements Closeable {
 
 			var record = new ProducerRecord<>(topic, key, value);
 			System.out.println(record.toString());
-
+			
+			// this will wait for the ack
 			this.producer.send(record, callback()).get();
 
 			this.producer.commitTransaction();
@@ -52,7 +53,7 @@ public class KafkaProducerService<T> implements Closeable {
 
 	private static Properties getProperties() {
 		var properties = new Properties();
-		properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "172.16.0.3:9092");
+		properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "172.16.0.3:9091,172.16.0.3:9092");
 
 	    // to send strings we need a string serializer
 		properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());

@@ -73,7 +73,7 @@ public class KafkaConsumerService<T> implements Closeable {
 	private Properties getProperties(String consumerName, Class<T> type) {
 		var properties = new Properties();
 
-		properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "172.16.0.3:9092");
+		properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "172.16.0.3:9091,172.16.0.3:9092");
 
 		properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
 		// properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
