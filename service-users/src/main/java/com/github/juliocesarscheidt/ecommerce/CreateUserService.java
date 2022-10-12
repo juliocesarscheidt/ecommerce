@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.UUID;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
@@ -47,15 +48,16 @@ public class CreateUserService {
 		if (isNewUser(email)) {
 			insertNewUser(email);
 		}
-		
 	}
 
 	private void insertNewUser(String email) {
 		String createUserSql = "INSERT INTO Users " +
 				"(uuid, email) VALUES (?, ?)";
 		try {
+			String uuid = UUID.randomUUID().toString();
+			
 			PreparedStatement insert = this.connection.prepareStatement(createUserSql);
-			insert.setString(1, "uuid");
+			insert.setString(1, uuid);
 			insert.setString(2, email);
 			insert.execute();
 			System.out.println("Created new user with email " + email);
@@ -73,7 +75,7 @@ public class CreateUserService {
 			select.setString(1, email);
 			ResultSet results = select.executeQuery();
 			boolean exists = results.next();
-			System.out.println("exists " + exists);
+			System.out.println("User with email " + email + " exists :: " + exists);
 			return !exists;
 
 		} catch (SQLException e) {

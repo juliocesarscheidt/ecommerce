@@ -2,20 +2,14 @@ package com.github.juliocesarscheidt.ecommerce;
 
 import java.math.BigDecimal;
 
-public class Order {
+public class OrderDto {
 	
-	private final String orderId;
 	private final BigDecimal amount;
 	private final String email;
 
-	public Order(String orderId, BigDecimal amount, String email) {
-		this.orderId = orderId;
+	public OrderDto(BigDecimal amount, String email) {
 		this.amount = amount;
 		this.email = email;
-	}
-
-	public String getOrderId() {
-		return orderId;
 	}
 
 	public BigDecimal getAmount() {
@@ -28,6 +22,6 @@ public class Order {
 
 	@Override
 	public String toString() {
-		return "Order [orderId=" + orderId + ", amount=" + amount + ", email=" + email + "]";
+		return "Order [amount=" + amount + ", email=" + email + "]";
 	}
 }

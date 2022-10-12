@@ -30,10 +30,10 @@ public class FraudDetectorService {
 		var order = (Order) record.value();
 		if (isFraud(order)) {
 			System.out.println("Order REJECTED, it is a fraud attempt!");
-			orderProducer.send("ECOMMERCE_ORDER_REJECTED", order.getUserId(), order);
+			orderProducer.send("ECOMMERCE_ORDER_REJECTED", order.getEmail(), order);
 		} else {
 			System.out.println("Order APPROVED " + order);
-			orderProducer.send("ECOMMERCE_ORDER_APPROVED", order.getUserId(), order);
+			orderProducer.send("ECOMMERCE_ORDER_APPROVED", order.getEmail(), order);
 		}
 	}
 

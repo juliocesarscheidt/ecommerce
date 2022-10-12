@@ -10,6 +10,12 @@ public class EmailService {
 						  + " | topic " + record.topic()
 						  + " | partition " + record.partition()
 						  + " | offset " + record.offset());
+		
+		Email emailContent = record.value();
+		String email = emailContent.getSubject();
+		String emailBody = emailContent.getBody();
+
+		System.out.println("Pretending we would send an email to the user");
 	}
 
 	public static void main(String[] args) {

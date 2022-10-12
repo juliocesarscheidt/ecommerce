@@ -1,14 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>service-new-order</artifactId>
-  <name>service-new-order</name>
-
+  <artifactId>service-http-api</artifactId>
+  <name>service-http-api</name>
+  
   <parent>
     <groupId>com.github.juliocesarscheidt</groupId>
     <artifactId>ecommerce</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
-	
+
   <build>
    	<plugins>
       <plugin>
@@ -18,7 +18,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>com.github.juliocesarscheidt.ecommerce.NewOrderService</mainClass>
+              <mainClass>com.github.juliocesarscheidt.ecommerce.HttpApiService</mainClass>
             </manifest>
           </archive>
         </configuration>
@@ -27,16 +27,16 @@
   </build>
 
   <dependencies>
-    <dependency>
-        <groupId>com.github.juliocesarscheidt</groupId>
-        <artifactId>common-kafka</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
-    </dependency>
+		<dependency>
+		    <groupId>com.github.juliocesarscheidt</groupId>
+		    <artifactId>common-kafka</artifactId>
+		    <version>0.0.1-SNAPSHOT</version>
+		</dependency>
 
-    <dependency>
-	    <groupId>com.github.javafaker</groupId>
-	    <artifactId>javafaker</artifactId>
-	    <version>1.0.2</version>
-	</dependency>
+		<dependency>
+		    <groupId>org.eclipse.jetty</groupId>
+		    <artifactId>jetty-servlet</artifactId>
+		    <version>11.0.0</version>
+		</dependency>
   </dependencies>
 </project>

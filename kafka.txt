@@ -51,9 +51,19 @@ kafka-consumer-groups --bootstrap-server "$BS" --topic "$TOPIC_NAME" --group "co
 
 
 
+# service-http-api module
+mvn -pl service-http-api -am clean package
+java -jar service-http-api\target\app.jar
+
+curl -X POST --url http://172.16.0.2:8081/api/order -H 'content-type: application/json' --data-raw '{"email": "julioscheidt@mail.com", "amount": "1000.50"}'
+
+curl -X POST --url http://172.16.0.2:8081/api/order -H "content-type: application/json" --data-raw "{"email": "julioscheidt@mail.com", "amount": "1000.50"}"
+
+
 # service-new-order module
-mvn -pl service-new-order -am clean install
+mvn -pl service-new-order -am clean package
 java -jar service-new-order\target\app.jar
+java -jar service-new-order\target\app.jar 10
 
 
 # all modules
