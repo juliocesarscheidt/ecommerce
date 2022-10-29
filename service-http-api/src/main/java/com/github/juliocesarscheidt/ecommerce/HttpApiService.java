@@ -18,11 +18,11 @@ public class HttpApiService {
         connector.setPort(8081);
         server.setConnectors(new Connector[] {connector});
 
-		var context = new ServletContextHandler();
+        ServletContextHandler context = new ServletContextHandler();
 		context.setContextPath("/api");
 		// add paths
 		context.addServlet(new ServletHolder(new NewOrderServlet()), "/order");
-
+		context.addServlet(new ServletHolder(new GenerateReportsService()), "/admin/generate-reports");
 		server.setHandler(context);
 
 		System.out.println("Server listening on 8080");

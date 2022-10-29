@@ -5,35 +5,30 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import java.util.Properties;
 
 import javax.mail.Address;
-import javax.mail.Authenticator;
+// import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.PasswordAuthentication;
+// import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
 
 public class EmailService {
 
 	private void sendEmail(String emailDestination, String emailBody) {
 		Properties props = new Properties();
 		props.put("mail.smtp.host", "172.16.0.3");
-	    // props.put("mail.smtp.socketFactory.port", "465");
 	    props.put("mail.smtp.socketFactory.port", "1025");
 	    // props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
 	    props.put("mail.smtp.auth", "false");
-	    // props.put("mail.smtp.port", "465");
 	    props.put("mail.smtp.port", "1025");
 
-	    Authenticator auth = new Authenticator() {
-            public PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication("", "");
-            }
-        };
+	    // Authenticator auth = new Authenticator() {
+	    //     public PasswordAuthentication getPasswordAuthentication() {
+	    //         return new PasswordAuthentication("", "");
+	    //     }
+	    // };
  
         // Session session = Session.getInstance(props, auth);
 
@@ -65,16 +60,16 @@ public class EmailService {
 						  + " | topic " + record.topic()
 						  + " | partition " + record.partition()
 						  + " | offset " + record.offset());
-		
+
 		Email emailContent = record.value();
 		String emailDestination = emailContent.getSubject();
 		String emailBody = emailContent.getBody();
-		
+
 		sendEmail(emailDestination, emailBody);
 	}
 
 	public static void main(String[] args) {
-		EmailService emailService = new EmailService();		
+		EmailService emailService = new EmailService();
 		try (KafkaConsumerService<Email> service = new KafkaConsumerService<>("ECOMMERCE_SEND_EMAIL",
 																			emailService.getClass().getSimpleName(),
 																			emailService::parse,

@@ -1,7 +1,6 @@
 package com.github.juliocesarscheidt.ecommerce;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,32 +10,13 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 public class CreateUserService {
 	
-	private Connection connection;
+	private final Connection connection;
 
-	CreateUserService() {
-		// create the sqlite file inside target/ folder
-		String connectionString = "jdbc:sqlite:target/users_database.db";
-		try {
-			this.connection = DriverManager.getConnection(connectionString);
-			String createTableSql = "CREATE TABLE IF NOT EXISTS Users " +
-					"(uuid varchar(255) primary key, email varchar(255))";
-			this.connection.createStatement().execute(createTableSql);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+	public CreateUserService(Connection connection) {
+		this.connection = connection;
 	}
 
-	public static void main(String[] args) {
-		CreateUserService createUserService = new CreateUserService();		
-		try (KafkaConsumerService<Order> service = new KafkaConsumerService<>("ECOMMERCE_NEW_ORDER",
-																			createUserService.getClass().getSimpleName(),
-																			createUserService::parse,
-																			Order.class)) {
-			service.run();
-		}
-	}
-
-	private void parse(ConsumerRecord<String, Order> record) {
+	public void parse(ConsumerRecord<String, Order> record) {
 		System.out.println("[INFO] key " + record.key()
 						  + " | value " + record.value()
 						  + " | topic " + record.topic()

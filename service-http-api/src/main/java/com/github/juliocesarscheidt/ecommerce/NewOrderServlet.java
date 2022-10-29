@@ -18,7 +18,7 @@ public class NewOrderServlet extends HttpServlet {
 	
 	private static final KafkaProducerService<Order> orderProducer = new KafkaProducerService<>();
 	private static final KafkaProducerService<Email> emailProducer = new KafkaProducerService<>();
-	
+
 	private final Gson gson = new GsonBuilder().create();
 
 	private static final long serialVersionUID = 1L;
@@ -54,9 +54,7 @@ public class NewOrderServlet extends HttpServlet {
 			Email emailContent = new Email(userEmail, "<h1>Thank you for your order " + userEmail + "! We are processing your request</h1>");
 			emailProducer.send("ECOMMERCE_SEND_EMAIL", userEmail, emailContent);
 
-			System.out.println("Order is being processed");
-
-			ResponseDto res = new ResponseDto("Order created successfully");
+			ResponseDto res = new ResponseDto("Order is being processed");
 			response.setCharacterEncoding("utf-8");
 	        response.setContentType("application/json");
 	        response.setStatus(HttpServletResponse.SC_OK);

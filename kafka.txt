@@ -14,6 +14,8 @@ export TOPIC_NAME="ECOMMERCE_NEW_ORDER"
 export TOPIC_NAME="ECOMMERCE_SEND_EMAIL"
 export TOPIC_NAME="ECOMMERCE_ORDER_REJECTED"
 export TOPIC_NAME="ECOMMERCE_ORDER_APPROVED"
+export TOPIC_NAME="DISPATCH_BATCH_MESSAGE"
+export TOPIC_NAME="USER_GENERATE_READING_REPORT"
 
 
 kafka-topics --zookeeper $ZK --list
@@ -34,6 +36,8 @@ kafka-consumer-groups --bootstrap-server "$BS" --describe --group "CreateUserSer
 kafka-consumer-groups --bootstrap-server "$BS" --describe --group "FraudDetectorService"
 kafka-consumer-groups --bootstrap-server "$BS" --describe --group "EmailService"
 kafka-consumer-groups --bootstrap-server "$BS" --describe --group "LogService"
+kafka-consumer-groups --bootstrap-server "$BS" --describe --group "DispatchBatchMessageService"
+kafka-consumer-groups --bootstrap-server "$BS" --describe --group "ReadingReportService"
 
 
 
@@ -70,6 +74,7 @@ java -jar service-new-order\target\app.jar 10
 
 
 # all modules
+mvn clean package
 mvn --projects common-kafka,service-email,service-fraud,service-log,service-new-order,service-users --also-make clean package
 
 mvn clean
