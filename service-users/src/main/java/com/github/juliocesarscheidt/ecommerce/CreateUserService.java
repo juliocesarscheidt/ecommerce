@@ -16,14 +16,15 @@ public class CreateUserService {
 		this.connection = connection;
 	}
 
-	public void parse(ConsumerRecord<String, Order> record) {
+	public void parse(ConsumerRecord<String, Message<Order>> record) {
 		System.out.println("[INFO] key " + record.key()
 						  + " | value " + record.value()
 						  + " | topic " + record.topic()
 						  + " | partition " + record.partition()
 						  + " | offset " + record.offset());
 		
-		var order = (Order) record.value();
+		var message = record.value();
+		var order = (Order) message.getPayload();
 		String email = order.getEmail();
 		if (isNewUser(email)) {
 			insertNewUser(email);

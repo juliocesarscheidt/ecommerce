@@ -37,9 +37,9 @@ public class Entrypoint {
 				@Override
 			    public void run() {
 					try (KafkaConsumerService<Order> createUserConsumerService = new KafkaConsumerService<>("ECOMMERCE_NEW_ORDER",
-																											createUserService.getClass().getSimpleName(),
-																											createUserService::parse,
-																											Order.class)) {
+																										createUserService.getClass().getSimpleName(),
+																										createUserService::parse,
+																										Order.class)) {
 						
 						System.out.println("Consuming from ECOMMERCE_NEW_ORDER");
 						createUserConsumerService.run();	

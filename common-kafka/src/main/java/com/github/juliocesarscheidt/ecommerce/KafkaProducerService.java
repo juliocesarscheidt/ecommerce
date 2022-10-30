@@ -13,18 +13,20 @@ import org.apache.kafka.common.serialization.StringSerializer;
 
 public class KafkaProducerService<T> implements Closeable {
 
-	private final KafkaProducer<String, T> producer;
+	private final KafkaProducer<String, Message<T>> producer;
 
 	KafkaProducerService() {
 		this.producer = new KafkaProducer<>(getProperties());
 		this.producer.initTransactions();
 	}
 
-	void send(String topic, String key, T value) {
+	void send(String topic, String key, T payload) {
 		try {
+			var message = new Message<>(new CorrelationId(), payload);
+
 			this.producer.beginTransaction();
 
-			var record = new ProducerRecord<>(topic, key, value);
+			var record = new ProducerRecord<>(topic, key, message);
 			System.out.println(record.toString());
 			
 			// this will wait for the ack

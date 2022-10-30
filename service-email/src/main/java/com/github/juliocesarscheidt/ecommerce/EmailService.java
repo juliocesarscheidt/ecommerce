@@ -54,14 +54,15 @@ public class EmailService {
 	     }
 	}
 
-	private void parse(ConsumerRecord<String, Email> record) {
+	private void parse(ConsumerRecord<String, com.github.juliocesarscheidt.ecommerce.Message<Email>> record) {
 		System.out.println("[INFO] key " + record.key()
 						  + " | value " + record.value()
 						  + " | topic " + record.topic()
 						  + " | partition " + record.partition()
 						  + " | offset " + record.offset());
 
-		Email emailContent = record.value();
+		var message = record.value();
+		Email emailContent = message.getPayload();
 		String emailDestination = emailContent.getSubject();
 		String emailBody = emailContent.getBody();
 

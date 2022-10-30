@@ -28,6 +28,8 @@ kafka-topics --zookeeper "$ZK" --topic "$TOPIC_NAME" --describe
 
 kafka-topics --zookeeper "$ZK" --topic "$TOPIC_NAME" --alter --partitions 3
 
+kafka-topics --zookeeper "$ZK" --topic "$TOPIC_NAME" --delete
+
 
 
 kafka-consumer-groups --bootstrap-server "$BS" --list

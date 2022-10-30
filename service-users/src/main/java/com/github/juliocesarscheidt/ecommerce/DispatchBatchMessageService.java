@@ -19,14 +19,15 @@ public class DispatchBatchMessageService {
 		this.connection = connection;
 	}
 
-	public void parse(ConsumerRecord<String, String> record) {
+	public void parse(ConsumerRecord<String, Message<String>> record) {
 		System.out.println("[INFO] key " + record.key()
 						  + " | value " + record.value()
 						  + " | topic " + record.topic()
 						  + " | partition " + record.partition()
 						  + " | offset " + record.offset());
-
-		var topic = record.value();
+		
+		var message = record.value();
+		var topic = message.getPayload();
 		System.out.println("producing to topic " + topic);
 
 		List<User> users = getUsers();

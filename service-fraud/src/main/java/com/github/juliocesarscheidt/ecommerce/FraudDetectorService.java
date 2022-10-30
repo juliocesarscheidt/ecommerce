@@ -20,14 +20,15 @@ public class FraudDetectorService {
 		}
 	}
 
-	private void parse(ConsumerRecord<String, Order> record) {
+	private void parse(ConsumerRecord<String, Message<Order>> record) {
 		System.out.println("[INFO] key " + record.key()
 						  + " | value " + record.value()
 						  + " | topic " + record.topic()
 						  + " | partition " + record.partition()
 						  + " | offset " + record.offset());
 		
-		var order = (Order) record.value();
+		var message = record.value();
+		var order = (Order) message.getPayload();
 		if (isFraud(order)) {
 			System.out.println("Order REJECTED, it is a fraud attempt!");
 			orderProducer.send("ECOMMERCE_ORDER_REJECTED", order.getEmail(), order);

@@ -6,7 +6,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 public class LogService {
 
-	private void parse(ConsumerRecord<String, Object> record) {
+	private void parse(ConsumerRecord<String, Message<Object>> record) {
 		System.out.println("[INFO] key " + record.key()
 						  + " | value " + record.value()
 						  + " | topic " + record.topic()

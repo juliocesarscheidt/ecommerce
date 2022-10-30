@@ -15,7 +15,7 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 
 public class KafkaConsumerService<T> implements Closeable {
 
-	private final KafkaConsumer<String, T> consumer;
+	private final KafkaConsumer<String, Message<T>> consumer;
 	private final ConsumerFunction<T> parse;
 
 	private KafkaConsumerService(String consumerName, ConsumerFunction<T> parse, Class<T> type) {
@@ -40,14 +40,14 @@ public class KafkaConsumerService<T> implements Closeable {
 
 		while (true) {
 			try {
-				ConsumerRecords<String, T> records = this.consumer.poll(Duration.ofMillis(millisecondsToPoll));
+				ConsumerRecords<String, Message<T>> records = this.consumer.poll(Duration.ofMillis(millisecondsToPoll));
 				if (records.isEmpty()) {
 					System.out.println("Any message found, continuing...");
 					Thread.sleep(1000); // sleep 1 secs
 					continue;
 				}
 
-				for (ConsumerRecord<String, T> record: records) {
+				for (ConsumerRecord<String, Message<T>> record: records) {
 			        // buffer.add(record);
 					try {						
 						this.parse.consume(record);

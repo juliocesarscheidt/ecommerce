@@ -18,14 +18,15 @@ public class ReadingReportService {
 		}
 	}
 
-	private void parse(ConsumerRecord<String, User> record) {
+	private void parse(ConsumerRecord<String, Message<User>> record) {
 		System.out.println("[INFO] key " + record.key()
 						  + " | value " + record.value()
 						  + " | topic " + record.topic()
 						  + " | partition " + record.partition()
 						  + " | offset " + record.offset());
 
-		var user = (User) record.value();
+		var message = record.value();
+		var user = (User) message.getPayload();
 		var target = new File(user.getReportPath());
 		IO.copyTo(SOURCE, target);
 
