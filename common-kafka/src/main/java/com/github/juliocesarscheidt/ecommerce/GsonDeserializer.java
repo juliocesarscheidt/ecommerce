@@ -11,6 +11,16 @@ public class GsonDeserializer implements Deserializer<Message> {
 
 	private final Gson gson = new GsonBuilder().registerTypeAdapter(Message.class, new MessageAdapter()).create();
 
+	@Override
+	public Message deserialize(String s, byte[] bytes) {
+		// return gson.fromJson(new String(bytes), type);
+		return gson.fromJson(new String(bytes), Message.class);
+	}
+
+	public Message deserialize(byte[] bytes) {
+		return gson.fromJson(new String(bytes), Message.class);
+	}
+
 	/*
 	private Class<T> type;
 
@@ -29,10 +39,4 @@ public class GsonDeserializer implements Deserializer<Message> {
 		Deserializer.super.configure(configs, isKey);
 	}
 	*/
-
-	@Override
-	public Message deserialize(String s, byte[] bytes) {
-		// return gson.fromJson(new String(bytes), type);
-		return gson.fromJson(new String(bytes), Message.class);
-	}
 }

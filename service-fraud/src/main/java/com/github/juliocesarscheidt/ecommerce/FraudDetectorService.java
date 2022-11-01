@@ -14,8 +14,7 @@ public class FraudDetectorService {
 		FraudDetectorService fraudService = new FraudDetectorService();		
 		try (KafkaConsumerService<Order> service = new KafkaConsumerService<>("ECOMMERCE_NEW_ORDER",
 																			fraudService.getClass().getSimpleName(),
-																			fraudService::parse,
-																			Order.class)) {
+																			fraudService::parse)) {
 			service.run();
 		}
 	}
@@ -26,15 +25,15 @@ public class FraudDetectorService {
 						  + " | topic " + record.topic()
 						  + " | partition " + record.partition()
 						  + " | offset " + record.offset());
-		
+
 		var message = record.value();
 		var order = (Order) message.getPayload();
 		if (isFraud(order)) {
 			System.out.println("Order REJECTED, it is a fraud attempt!");
-			orderProducer.send("ECOMMERCE_ORDER_REJECTED", order.getEmail(), order);
+			orderProducer.send("ECOMMERCE_ORDER_REJECTED", order.getEmail(), message.getId().continueWith(FraudDetectorService.class.getSimpleName()), order);
 		} else {
 			System.out.println("Order APPROVED " + order);
-			orderProducer.send("ECOMMERCE_ORDER_APPROVED", order.getEmail(), order);
+			orderProducer.send("ECOMMERCE_ORDER_APPROVED", order.getEmail(), message.getId().continueWith(FraudDetectorService.class.getSimpleName()), order);
 		}
 	}
 

@@ -14,8 +14,10 @@ export TOPIC_NAME="ECOMMERCE_NEW_ORDER"
 export TOPIC_NAME="ECOMMERCE_SEND_EMAIL"
 export TOPIC_NAME="ECOMMERCE_ORDER_REJECTED"
 export TOPIC_NAME="ECOMMERCE_ORDER_APPROVED"
-export TOPIC_NAME="DISPATCH_BATCH_MESSAGE"
-export TOPIC_NAME="USER_GENERATE_READING_REPORT"
+export TOPIC_NAME="ECOMMERCE_DISPATCH_BATCH_MESSAGE"
+export TOPIC_NAME="ECOMMERCE_USER_GENERATE_READING_REPORT"
+export TOPIC_NAME="ECOMMERCE_DEADLETTER"
+
 
 
 kafka-topics --zookeeper $ZK --list
@@ -32,7 +34,11 @@ kafka-topics --zookeeper "$ZK" --topic "$TOPIC_NAME" --delete
 
 
 
-kafka-consumer-groups --bootstrap-server "$BS" --list
+kafka-topics --zookeeper "$ZK" --describe
+
+
+
+kafka-consumer-groups --bootstrap-server "$BS" --all-topics --list
 
 kafka-consumer-groups --bootstrap-server "$BS" --describe --group "CreateUserService"
 kafka-consumer-groups --bootstrap-server "$BS" --describe --group "FraudDetectorService"

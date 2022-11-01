@@ -27,7 +27,6 @@ public class MessageAdapter implements JsonSerializer<Message>, JsonDeserializer
 	public Message deserialize(JsonElement json, Type type, JsonDeserializationContext context) throws JsonParseException {
 		try {
 			JsonObject obj = json.getAsJsonObject();
-			System.out.println(obj);
 
 			var payloadType = obj.get("type").getAsString();
 			var correlationId = (CorrelationId) context.deserialize(obj.get("correlationId"), CorrelationId.class);

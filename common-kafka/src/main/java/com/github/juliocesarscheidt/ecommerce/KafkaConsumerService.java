@@ -16,43 +16,53 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 public class KafkaConsumerService<T> implements Closeable {
 
 	private final KafkaConsumer<String, Message<T>> consumer;
-	private final ConsumerFunction<T> parse;
+	private final ConsumerFunction<T> parser;
+	private static final KafkaProducerService<Object> deadLetterProducer = new KafkaProducerService<>(false);
 
-	private KafkaConsumerService(String consumerName, ConsumerFunction<T> parse, Class<T> type) {
-		this.consumer = new KafkaConsumer<>(getProperties(consumerName, type));
-		this.parse = parse;
+	private KafkaConsumerService(String consumerName, ConsumerFunction<T> parser) {
+		this.consumer = new KafkaConsumer<>(getProperties(consumerName));
+		this.parser = parser;
 	}
 
-	public KafkaConsumerService(String topic, String consumerName, ConsumerFunction<T> parse, Class<T> type) {
-		this(consumerName, parse, type);
+	public KafkaConsumerService(String topic, String consumerName, ConsumerFunction<T> parse) {
+		this(consumerName, parse);
 		this.consumer.subscribe(Collections.singletonList(topic));
 	}
 
-	public KafkaConsumerService(Pattern compile, String consumerName, ConsumerFunction<T> parse, Class<T> type) {
-		this(consumerName, parse, type);
+	public KafkaConsumerService(Pattern compile, String consumerName, ConsumerFunction<T> parse) {
+		this(consumerName, parse);
 		this.consumer.subscribe(compile);
 	}
 
 	void run() {
-		// Integer bufferBatchSize = 1; // number of messages to poll before commiting
+		// Integer bufferBatchSize = 100; // number of messages to poll before commiting
 	    // List<ConsumerRecord<String, String>> buffer = new ArrayList<>();
-		Integer millisecondsToPoll = 1000; // 1 second
+		Integer millisecondsToPoll = 100; // 100 ms
 
 		while (true) {
 			try {
 				ConsumerRecords<String, Message<T>> records = this.consumer.poll(Duration.ofMillis(millisecondsToPoll));
 				if (records.isEmpty()) {
-					System.out.println("Any message found, continuing...");
-					Thread.sleep(1000); // sleep 1 secs
+					System.out.println("[KakfaConsumerService] Any message found, continuing...");
+					Thread.sleep(100); // sleep 100 ms
 					continue;
 				}
+
+				System.out.println("[KakfaConsumerService] Found " + records.count() + " records!");
 
 				for (ConsumerRecord<String, Message<T>> record: records) {
 			        // buffer.add(record);
 					try {						
-						this.parse.consume(record);
+						this.parser.consume(record);
+
 					} catch (Exception e) {
 						e.printStackTrace();
+
+						// send to dead letter
+						var message = record.value();
+						try (GsonSerializer<Object> gson = new GsonSerializer<>()) {
+							deadLetterProducer.send("ECOMMERCE_DEADLETTER", message.getId().toString(), message.getId().continueWith("DeadLetter"), gson.serialize(message));
+						}
 					}
 				}
 
@@ -70,7 +80,7 @@ public class KafkaConsumerService<T> implements Closeable {
 		}
 	}
 	
-	private Properties getProperties(String consumerName, Class<T> type) {
+	private Properties getProperties(String consumerName) {
 		var properties = new Properties();
 
 		properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "172.16.0.3:9091,172.16.0.3:9092");
@@ -79,15 +89,13 @@ public class KafkaConsumerService<T> implements Closeable {
 		// properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
 		properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, GsonDeserializer.class.getName());
 
-		properties.put(GsonDeserializer.TYPE_CONFIG, type.getName());
-
 	    properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
 	    // properties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
 	    properties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true");
 
-	    // properties.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 100);
-	    properties.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 1);
+	    // properties.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "100");
+	    properties.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "1");
 
 	    properties.put(ConsumerConfig.GROUP_ID_CONFIG, consumerName);	 
 	    properties.put(ConsumerConfig.CLIENT_ID_CONFIG, consumerName + "-" + UUID.randomUUID().toString()); 

@@ -22,7 +22,7 @@ public class HttpApiService {
 		context.setContextPath("/api");
 		// add paths
 		context.addServlet(new ServletHolder(new NewOrderServlet()), "/order");
-		context.addServlet(new ServletHolder(new GenerateReportsService()), "/admin/generate-reports");
+		context.addServlet(new ServletHolder(new GenerateReportsServlet()), "/admin/generate-reports");
 		server.setHandler(context);
 
 		System.out.println("Server listening on 8081");

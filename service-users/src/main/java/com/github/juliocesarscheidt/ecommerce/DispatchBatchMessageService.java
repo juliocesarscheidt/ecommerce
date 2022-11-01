@@ -13,7 +13,7 @@ public class DispatchBatchMessageService {
 
 	private final Connection connection;
 
-	private static final KafkaProducerService<User> userProducer = new KafkaProducerService<>();
+	private static final KafkaProducerService<User> userProducer = new KafkaProducerService<>(false);
 
 	public DispatchBatchMessageService(Connection connection) {
 		this.connection = connection;
@@ -25,18 +25,20 @@ public class DispatchBatchMessageService {
 						  + " | topic " + record.topic()
 						  + " | partition " + record.partition()
 						  + " | offset " + record.offset());
-		
+
 		var message = record.value();
 		var topic = message.getPayload();
 		System.out.println("producing to topic " + topic);
 
 		List<User> users = getUsers();
 		for (User user : users) {
-			System.out.println(user);
-			userProducer.send(topic, user.getEmail(), user);
+			System.out.println("user " + user);
+			// send message asynchronous
+			// concatenates already existing correlationId with a new information from our current class
+			userProducer.sendAsync(topic, user.getEmail(), message.getId().continueWith(DispatchBatchMessageService.class.getSimpleName()), user);
 		}
 	}
-	
+
 	private List<User> getUsers() {
 		String getUsersSql = "SELECT uuid, email FROM Users";
 		try {

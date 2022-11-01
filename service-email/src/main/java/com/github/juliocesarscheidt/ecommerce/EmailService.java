@@ -16,6 +16,30 @@ import javax.mail.internet.MimeMessage;
 
 public class EmailService {
 
+	private void parse(ConsumerRecord<String, com.github.juliocesarscheidt.ecommerce.Message<Email>> record) {
+		System.out.println("[INFO] key " + record.key()
+						  + " | value " + record.value()
+						  + " | topic " + record.topic()
+						  + " | partition " + record.partition()
+						  + " | offset " + record.offset());
+
+		var message = record.value();
+		Email emailContent = message.getPayload();
+		String emailDestination = emailContent.getSubject();
+		String emailBody = emailContent.getBody();
+
+		sendEmail(emailDestination, emailBody);
+	}
+
+	public static void main(String[] args) {
+		EmailService emailService = new EmailService();
+		try (KafkaConsumerService<Email> service = new KafkaConsumerService<>("ECOMMERCE_SEND_EMAIL",
+																			emailService.getClass().getSimpleName(),
+																			emailService::parse)) {
+			service.run();
+		}
+	}
+
 	private void sendEmail(String emailDestination, String emailBody) {
 		Properties props = new Properties();
 		props.put("mail.smtp.host", "172.16.0.3");
@@ -52,30 +76,5 @@ public class EmailService {
 	     } catch (MessagingException e) {
 	    	 throw new RuntimeException(e);
 	     }
-	}
-
-	private void parse(ConsumerRecord<String, com.github.juliocesarscheidt.ecommerce.Message<Email>> record) {
-		System.out.println("[INFO] key " + record.key()
-						  + " | value " + record.value()
-						  + " | topic " + record.topic()
-						  + " | partition " + record.partition()
-						  + " | offset " + record.offset());
-
-		var message = record.value();
-		Email emailContent = message.getPayload();
-		String emailDestination = emailContent.getSubject();
-		String emailBody = emailContent.getBody();
-
-		sendEmail(emailDestination, emailBody);
-	}
-
-	public static void main(String[] args) {
-		EmailService emailService = new EmailService();
-		try (KafkaConsumerService<Email> service = new KafkaConsumerService<>("ECOMMERCE_SEND_EMAIL",
-																			emailService.getClass().getSimpleName(),
-																			emailService::parse,
-																			Email.class)) {
-			service.run();
-		}
 	}
 }

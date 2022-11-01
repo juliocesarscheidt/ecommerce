@@ -26,10 +26,10 @@ public class NewOrderService {
 				String orderId = UUID.randomUUID().toString();
 
 				Order order = new Order(orderId, orderAmount, userEmail);
-				orderProducer.send("ECOMMERCE_NEW_ORDER", userEmail, order);
+				orderProducer.send("ECOMMERCE_NEW_ORDER", userEmail, new CorrelationId(NewOrderService.class.getSimpleName()), order);
 
 				Email emailContent = new Email(userEmail, "<h1>Thank you for your order " + userEmail + "! We are processing your request</h1>");
-				emailProducer.send("ECOMMERCE_SEND_EMAIL", userEmail, emailContent);
+				emailProducer.send("ECOMMERCE_SEND_EMAIL", userEmail, new CorrelationId(NewOrderService.class.getSimpleName()), emailContent);
 			}
 
 		} catch (Exception e) {

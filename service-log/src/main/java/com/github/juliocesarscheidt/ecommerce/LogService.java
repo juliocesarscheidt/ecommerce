@@ -18,8 +18,7 @@ public class LogService {
 		LogService logService = new LogService();
 		try (KafkaConsumerService<Object> service = new KafkaConsumerService<>(Pattern.compile("ECOMMERCE_.*"),
 																			logService.getClass().getSimpleName(),
-																			logService::parse,
-																			Object.class)) {
+																			logService::parse)) {
 			service.run();
 		}
 	}

@@ -22,12 +22,11 @@ public class Entrypoint {
 			// starting threads to consume from both topics
 			new Thread() {
 				@Override
-			    public void run() {
-				try (KafkaConsumerService<String> dispatchBatchMessageConsumerService = new KafkaConsumerService<>("DISPATCH_BATCH_MESSAGE",
-																										dispatchBatchMessageService.getClass().getSimpleName(),
-																										dispatchBatchMessageService::parse,
-																										String.class)) {
-						System.out.println("Consuming from DISPATCH_BATCH_MESSAGE");
+				public void run() {
+				try (KafkaConsumerService<String> dispatchBatchMessageConsumerService = new KafkaConsumerService<>("ECOMMERCE_DISPATCH_BATCH_MESSAGE",
+																											dispatchBatchMessageService.getClass().getSimpleName(),
+																											dispatchBatchMessageService::parse)) {
+						System.out.println("Consuming from ECOMMERCE_DISPATCH_BATCH_MESSAGE");
 						dispatchBatchMessageConsumerService.run();
 					}
 				}
@@ -35,14 +34,13 @@ public class Entrypoint {
 
 			new Thread() {
 				@Override
-			    public void run() {
+				public void run() {
 					try (KafkaConsumerService<Order> createUserConsumerService = new KafkaConsumerService<>("ECOMMERCE_NEW_ORDER",
-																										createUserService.getClass().getSimpleName(),
-																										createUserService::parse,
-																										Order.class)) {
-						
+																											createUserService.getClass().getSimpleName(),
+																											createUserService::parse)) {
+
 						System.out.println("Consuming from ECOMMERCE_NEW_ORDER");
-						createUserConsumerService.run();	
+						createUserConsumerService.run();
 					}
 				}
 			}.start();

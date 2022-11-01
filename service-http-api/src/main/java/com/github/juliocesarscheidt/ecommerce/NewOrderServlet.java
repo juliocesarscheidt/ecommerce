@@ -47,12 +47,12 @@ public class NewOrderServlet extends HttpServlet {
 			String userEmail = orderDto.getEmail();
 			BigDecimal orderAmount = orderDto.getAmount();
 			String orderId = UUID.randomUUID().toString();
-
+	
 			Order order = new Order(orderId, orderAmount, userEmail);
-			orderProducer.send("ECOMMERCE_NEW_ORDER", userEmail, order);
+			orderProducer.send("ECOMMERCE_NEW_ORDER", userEmail, new CorrelationId(NewOrderServlet.class.getSimpleName()), order);
 
 			Email emailContent = new Email(userEmail, "<h1>Thank you for your order " + userEmail + "! We are processing your request</h1>");
-			emailProducer.send("ECOMMERCE_SEND_EMAIL", userEmail, emailContent);
+			emailProducer.send("ECOMMERCE_SEND_EMAIL", userEmail, new CorrelationId(NewOrderServlet.class.getSimpleName()), emailContent);
 
 			ResponseDto res = new ResponseDto("Order is being processed");
 			response.setCharacterEncoding("utf-8");
