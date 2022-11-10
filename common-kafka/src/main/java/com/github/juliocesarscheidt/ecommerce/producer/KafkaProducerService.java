@@ -1,4 +1,4 @@
-package com.github.juliocesarscheidt.ecommerce;
+package com.github.juliocesarscheidt.ecommerce.producer;
 
 import java.io.Closeable;
 import java.util.Properties;
@@ -13,25 +13,28 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.StringSerializer;
 
+import com.github.juliocesarscheidt.ecommerce.CorrelationId;
+import com.github.juliocesarscheidt.ecommerce.Message;
+
 public class KafkaProducerService<T> implements Closeable {
 
 	private final KafkaProducer<String, Message<T>> producer;
 	private final boolean transationsEnabled;
 
-	KafkaProducerService() {
+	public KafkaProducerService() {
 		// by default we are going to use transactions on kafka
 		transationsEnabled = true;
 		this.producer = new KafkaProducer<>(getProperties());
 		if (this.transationsEnabled) this.producer.initTransactions();
 	}
 	
-	KafkaProducerService(boolean transationsEnabled) {
+	public KafkaProducerService(boolean transationsEnabled) {
 		this.transationsEnabled = transationsEnabled;
 		this.producer = new KafkaProducer<>(getProperties());
 		if (this.transationsEnabled) this.producer.initTransactions();
 	}
 
-	void send(String topic, String key, CorrelationId correlationId, T payload) {
+	public void send(String topic, String key, CorrelationId correlationId, T payload) {
 		try {
 			if (this.transationsEnabled) this.producer.beginTransaction();
 
@@ -47,8 +50,10 @@ public class KafkaProducerService<T> implements Closeable {
 		}
 	}
 
-	Future<RecordMetadata> sendAsync(String topic, String key, CorrelationId correlationId, T payload) {
-		var message = new Message<>(correlationId, payload);
+	public Future<RecordMetadata> sendAsync(String topic, String key, CorrelationId correlationId, T payload) {
+		var id = correlationId.continueWith(topic);
+		System.out.println("[KafkaProducerService] Sending with CorrelationId :: " + id);
+		var message = new Message<>(id, payload);
 
 		var record = new ProducerRecord<>(topic, key, message);
 		System.out.println(record.toString());

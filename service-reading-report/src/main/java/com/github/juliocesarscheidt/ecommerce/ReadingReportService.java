@@ -4,6 +4,8 @@ import java.io.File;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
+import com.github.juliocesarscheidt.ecommerce.consumer.KafkaConsumerService;
+
 public class ReadingReportService {
 
 	private final File SOURCE = new File("src/main/resources/template_report.csv");

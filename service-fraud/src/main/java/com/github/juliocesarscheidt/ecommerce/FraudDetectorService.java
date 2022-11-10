@@ -4,6 +4,9 @@ import java.math.BigDecimal;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
+import com.github.juliocesarscheidt.ecommerce.consumer.KafkaConsumerService;
+import com.github.juliocesarscheidt.ecommerce.producer.KafkaProducerService;
+
 public class FraudDetectorService {
 	
 	private final BigDecimal ORDER_AMOUNT_THRESHOLD = new BigDecimal("4000");

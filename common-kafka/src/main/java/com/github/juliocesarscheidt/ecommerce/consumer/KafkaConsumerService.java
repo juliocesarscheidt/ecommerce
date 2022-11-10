@@ -1,4 +1,4 @@
-package com.github.juliocesarscheidt.ecommerce;
+package com.github.juliocesarscheidt.ecommerce.consumer;
 
 import java.io.Closeable;
 import java.time.Duration;
@@ -13,13 +13,17 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
+import com.github.juliocesarscheidt.ecommerce.Message;
+import com.github.juliocesarscheidt.ecommerce.producer.GsonSerializer;
+import com.github.juliocesarscheidt.ecommerce.producer.KafkaProducerService;
+
 public class KafkaConsumerService<T> implements Closeable {
 
 	private final KafkaConsumer<String, Message<T>> consumer;
 	private final ConsumerFunction<T> parser;
 	private static final KafkaProducerService<Object> deadLetterProducer = new KafkaProducerService<>(false);
 
-	private KafkaConsumerService(String consumerName, ConsumerFunction<T> parser) {
+	public KafkaConsumerService(String consumerName, ConsumerFunction<T> parser) {
 		this.consumer = new KafkaConsumer<>(getProperties(consumerName));
 		this.parser = parser;
 	}
@@ -34,7 +38,7 @@ public class KafkaConsumerService<T> implements Closeable {
 		this.consumer.subscribe(compile);
 	}
 
-	void run() {
+	public void run() {
 		// Integer bufferBatchSize = 100; // number of messages to poll before commiting
 	    // List<ConsumerRecord<String, String>> buffer = new ArrayList<>();
 		Integer millisecondsToPoll = 100; // 100 ms

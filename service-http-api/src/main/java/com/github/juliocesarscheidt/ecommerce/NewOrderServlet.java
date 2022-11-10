@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
+import com.github.juliocesarscheidt.ecommerce.producer.KafkaProducerService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -17,7 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
 public class NewOrderServlet extends HttpServlet {
 	
 	private static final KafkaProducerService<Order> orderProducer = new KafkaProducerService<>();
-	private static final KafkaProducerService<Email> emailProducer = new KafkaProducerService<>();
+	// private static final KafkaProducerService<Email> emailProducer = new KafkaProducerService<>();
 
 	private final Gson gson = new GsonBuilder().create();
 
@@ -32,7 +33,7 @@ public class NewOrderServlet extends HttpServlet {
 	public void destroy() {
 		super.destroy();
 		orderProducer.close();
-		emailProducer.close();
+		// emailProducer.close();
 	}
 
 	@Override
@@ -51,13 +52,13 @@ public class NewOrderServlet extends HttpServlet {
 			Order order = new Order(orderId, orderAmount, userEmail);
 			orderProducer.send("ECOMMERCE_NEW_ORDER", userEmail, new CorrelationId(NewOrderServlet.class.getSimpleName()), order);
 
-			Email emailContent = new Email(userEmail, "<h1>Thank you for your order " + userEmail + "! We are processing your request</h1>");
-			emailProducer.send("ECOMMERCE_SEND_EMAIL", userEmail, new CorrelationId(NewOrderServlet.class.getSimpleName()), emailContent);
+			// Email emailContent = new Email(userEmail, "<h1>Thank you for your order " + userEmail + "! We are processing your request</h1>");
+			// emailProducer.send("ECOMMERCE_SEND_EMAIL", userEmail, new CorrelationId(NewOrderServlet.class.getSimpleName()), emailContent);
 
 			ResponseDto res = new ResponseDto("Order is being processed");
 			response.setCharacterEncoding("utf-8");
 	        response.setContentType("application/json");
-	        response.setStatus(HttpServletResponse.SC_OK);
+	        response.setStatus(HttpServletResponse.SC_ACCEPTED);
 	        response.getWriter().println(res);
 
 		} catch (Exception e) {

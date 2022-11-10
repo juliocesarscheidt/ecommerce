@@ -4,7 +4,19 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import com.github.juliocesarscheidt.ecommerce.consumer.KafkaConsumerService;
+
 public class Entrypoint {
+	
+	private static void setupDatabase(Connection connection) {
+		try {
+			String createTableSql = "CREATE TABLE IF NOT EXISTS Users (uuid varchar(255) primary key, email varchar(255))";
+			connection.createStatement().execute(createTableSql);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	public static void main(String[] args) {
 		try {
@@ -12,8 +24,7 @@ public class Entrypoint {
 			String connectionString = "jdbc:sqlite:target/users_database.db";
 			// open the connection
 			Connection connection = DriverManager.getConnection(connectionString);
-			String createTableSql = "CREATE TABLE IF NOT EXISTS Users (uuid varchar(255) primary key, email varchar(255))";
-			connection.createStatement().execute(createTableSql);
+			setupDatabase(connection);
 
 			// create services injecting connection
 			DispatchBatchMessageService dispatchBatchMessageService = new DispatchBatchMessageService(connection);

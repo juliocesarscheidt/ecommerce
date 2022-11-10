@@ -2,6 +2,8 @@ package com.github.juliocesarscheidt.ecommerce;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
+import com.github.juliocesarscheidt.ecommerce.consumer.KafkaConsumerService;
+
 import java.util.Properties;
 
 import javax.mail.Address;

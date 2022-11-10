@@ -9,6 +9,8 @@ import java.util.List;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
+import com.github.juliocesarscheidt.ecommerce.producer.KafkaProducerService;
+
 public class DispatchBatchMessageService {
 
 	private final Connection connection;
@@ -35,7 +37,8 @@ public class DispatchBatchMessageService {
 			System.out.println("user " + user);
 			// send message asynchronous
 			// concatenates already existing correlationId with a new information from our current class
-			userProducer.sendAsync(topic, user.getEmail(), message.getId().continueWith(DispatchBatchMessageService.class.getSimpleName()), user);
+			userProducer.sendAsync(topic, user.getEmail(), message.getId()
+				.continueWith(DispatchBatchMessageService.class.getSimpleName()), user);
 		}
 	}
 

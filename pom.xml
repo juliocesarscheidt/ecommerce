@@ -111,5 +111,6 @@
 		<module>service-users</module>
 		<module>service-http-api</module>
 		<module>service-reading-report</module>
+		<module>service-email-new-order</module>
 	</modules>
 </project>

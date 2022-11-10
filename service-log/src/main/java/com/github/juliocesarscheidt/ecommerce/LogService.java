@@ -4,6 +4,8 @@ import java.util.regex.Pattern;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
+import com.github.juliocesarscheidt.ecommerce.consumer.KafkaConsumerService;
+
 public class LogService {
 
 	private void parse(ConsumerRecord<String, Message<Object>> record) {

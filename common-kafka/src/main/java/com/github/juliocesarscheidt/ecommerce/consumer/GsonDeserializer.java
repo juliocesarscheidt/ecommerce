@@ -1,13 +1,15 @@
-package com.github.juliocesarscheidt.ecommerce;
+package com.github.juliocesarscheidt.ecommerce.consumer;
 
 import org.apache.kafka.common.serialization.Deserializer;
 
+import com.github.juliocesarscheidt.ecommerce.Message;
+import com.github.juliocesarscheidt.ecommerce.MessageAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 public class GsonDeserializer implements Deserializer<Message> {
 
-	public static final Object TYPE_CONFIG = "com.github.juliocesarscheidt.ecommerce.type_config";
+	// public static final Object TYPE_CONFIG = "com.github.juliocesarscheidt.ecommerce.type_config";
 
 	private final Gson gson = new GsonBuilder().registerTypeAdapter(Message.class, new MessageAdapter()).create();
 

@@ -3,6 +3,8 @@ package com.github.juliocesarscheidt.ecommerce;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+import com.github.juliocesarscheidt.ecommerce.producer.KafkaProducerService;
+
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
@@ -38,7 +40,7 @@ public class GenerateReportsServlet extends HttpServlet {
 			ResponseDto res = new ResponseDto("Reports are being generated");
 			response.setCharacterEncoding("utf-8");
 			response.setContentType("application/json");
-			response.setStatus(HttpServletResponse.SC_OK);
+			response.setStatus(HttpServletResponse.SC_ACCEPTED);
 			response.getWriter().println(res);
 
 		} catch (Exception e) {
