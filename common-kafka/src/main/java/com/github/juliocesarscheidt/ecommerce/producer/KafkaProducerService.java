@@ -87,11 +87,13 @@ public class KafkaProducerService<T> implements Closeable {
 		properties.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
 		properties.put(ProducerConfig.ACKS_CONFIG, "all");
 	
-		properties.put(ProducerConfig.RETRIES_CONFIG, Integer.toString(Integer.MAX_VALUE));
+		// properties.put(ProducerConfig.RETRIES_CONFIG, Integer.toString(Integer.MAX_VALUE));
+		properties.put(ProducerConfig.RETRIES_CONFIG, 3);
+
 		properties.put(ProducerConfig.RETRY_BACKOFF_MS_CONFIG, 100);
 
 		// max number of unacked requests the client will send on a single request before blocking
-		properties.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 5);
+		properties.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 1);
 	    properties.put(ProducerConfig.MAX_BLOCK_MS_CONFIG, 33554432); // 32 MB
 
 	    properties.put(ProducerConfig.BUFFER_MEMORY_CONFIG, 33554432); // 32 MB

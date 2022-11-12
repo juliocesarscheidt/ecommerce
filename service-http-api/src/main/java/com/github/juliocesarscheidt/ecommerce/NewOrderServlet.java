@@ -3,7 +3,6 @@ package com.github.juliocesarscheidt.ecommerce;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
-import java.util.UUID;
 
 import com.github.juliocesarscheidt.ecommerce.producer.KafkaProducerService;
 import com.google.gson.Gson;
@@ -17,12 +16,9 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public class NewOrderServlet extends HttpServlet {
 	
-	private static final KafkaProducerService<Order> orderProducer = new KafkaProducerService<>();
-	// private static final KafkaProducerService<Email> emailProducer = new KafkaProducerService<>();
-
-	private final Gson gson = new GsonBuilder().create();
-
 	private static final long serialVersionUID = 1L;
+	private final Gson gson = new GsonBuilder().create();
+	private static final KafkaProducerService<Order> orderProducer = new KafkaProducerService<>();
 
 	@Override
 	public void init(ServletConfig config) throws ServletException {
@@ -33,7 +29,6 @@ public class NewOrderServlet extends HttpServlet {
 	public void destroy() {
 		super.destroy();
 		orderProducer.close();
-		// emailProducer.close();
 	}
 
 	@Override
@@ -41,25 +36,31 @@ public class NewOrderServlet extends HttpServlet {
 		String bodyRaw = new String(request.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
 		System.out.println(bodyRaw);
 
-		try {
+		try {			
 			OrderDto orderDto = gson.fromJson(bodyRaw, OrderDto.class);
 			System.out.println(orderDto);
 
+			String orderId = orderDto.getUuid();
 			String userEmail = orderDto.getEmail();
 			BigDecimal orderAmount = orderDto.getAmount();
-			String orderId = UUID.randomUUID().toString();
-	
+
 			Order order = new Order(orderId, orderAmount, userEmail);
-			orderProducer.send("ECOMMERCE_NEW_ORDER", userEmail, new CorrelationId(NewOrderServlet.class.getSimpleName()), order);
-
-			// Email emailContent = new Email(userEmail, "<h1>Thank you for your order " + userEmail + "! We are processing your request</h1>");
-			// emailProducer.send("ECOMMERCE_SEND_EMAIL", userEmail, new CorrelationId(NewOrderServlet.class.getSimpleName()), emailContent);
-
-			ResponseDto res = new ResponseDto("Order is being processed");
+			
 			response.setCharacterEncoding("utf-8");
 	        response.setContentType("application/json");
-	        response.setStatus(HttpServletResponse.SC_ACCEPTED);
-	        response.getWriter().println(res);
+			ResponseDto res;
+
+			try (var database = new OrdersDatabase()) {
+				if (database.saveNew(order)) {
+					orderProducer.send("ECOMMERCE_NEW_ORDER", userEmail, new CorrelationId(NewOrderServlet.class.getSimpleName()), order);
+					res = new ResponseDto("Order is being processed");
+			        response.setStatus(HttpServletResponse.SC_ACCEPTED);		        
+				} else {
+					res = new ResponseDto("Order already existing");
+			        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+				}
+		        response.getWriter().println(res);
+			}
 
 		} catch (Exception e) {
 			throw new ServletException(e);

@@ -1,6 +1,8 @@
 package com.github.juliocesarscheidt.ecommerce;
 
 import java.math.BigDecimal;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
@@ -11,24 +13,20 @@ import com.github.juliocesarscheidt.ecommerce.producer.KafkaProducerService;
 public class FraudDetectorService implements ConsumerService<Order> {
 	
 	private final BigDecimal ORDER_AMOUNT_THRESHOLD = new BigDecimal("4000");
-
 	private final KafkaProducerService<Order> orderProducer = new KafkaProducerService<>();
+	private final LocalDatabase database;
 
+	public FraudDetectorService() throws SQLException {
+		this.database = new LocalDatabase("frauds_database");
+		this.database.createTableIfNotExists("CREATE TABLE IF NOT EXISTS Orders (uuid varchar(255) primary key, is_fraud varchar(255))");
+	}
+	
 	public static void main(String[] args) {
 		// new ServiceProvider(FraudDetectorService::new).call();
 		// service runner will create the provider with a factory and call this provider X times
 		new ServiceRunner<Order>(FraudDetectorService::new).start(1);
 	}
 
-	/*
-	FraudDetectorService fraudService = new FraudDetectorService();		
-	try (KafkaConsumerService<Order> service = new KafkaConsumerService<>("ECOMMERCE_NEW_ORDER",
-																		fraudService.getClass().getSimpleName(),
-																		fraudService::parse)) {
-		service.run();
-	}
-	*/
-	
 	public String getTopic() {
 		return "ECOMMERCE_NEW_ORDER";
 	}
@@ -46,12 +44,36 @@ public class FraudDetectorService implements ConsumerService<Order> {
 
 		var message = record.value();
 		var order = (Order) message.getPayload();
-		if (isFraud(order)) {
-			System.out.println("Order REJECTED, it is a fraud attempt!");
-			orderProducer.send("ECOMMERCE_ORDER_REJECTED", order.getEmail(), message.getId().continueWith(FraudDetectorService.class.getSimpleName()), order);
-		} else {
-			System.out.println("Order APPROVED " + order);
-			orderProducer.send("ECOMMERCE_ORDER_APPROVED", order.getEmail(), message.getId().continueWith(FraudDetectorService.class.getSimpleName()), order);
+
+		if (isProcessed(order)) {
+			System.out.println("Order " + order.getOrderId() + " is already processed!");
+			return;
+		}
+
+		try {
+			var isFraud = isFraud(order);
+			var messageId = message.getId().continueWith(FraudDetectorService.class.getSimpleName());
+			if (isFraud) {
+				System.out.println("Order REJECTED, it is a fraud attempt!");
+				orderProducer.send("ECOMMERCE_ORDER_REJECTED", order.getEmail(), messageId, order);
+			} else {
+				System.out.println("Order APPROVED " + order);
+				orderProducer.send("ECOMMERCE_ORDER_APPROVED", order.getEmail(), messageId, order);
+			}
+			this.database.update("INSERT INTO Orders (uuid, is_fraud) VALUES (?, ?)", order.getOrderId(), isFraud ? "true" : "false");
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private boolean isProcessed(Order order) {
+		try {
+			ResultSet resultSet = this.database.query("SELECT uuid FROM Orders WHERE uuid = ? LIMIT 1", order.getOrderId());
+			return resultSet.next();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
 		}
 	}
 

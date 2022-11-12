@@ -1,19 +1,35 @@
 package com.github.juliocesarscheidt.ecommerce;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
-public class CreateUserService {
-	
-	private final Connection connection;
+import com.github.juliocesarscheidt.ecommerce.consumer.ConsumerService;
+import com.github.juliocesarscheidt.ecommerce.consumer.ServiceRunner;
 
-	public CreateUserService(Connection connection) {
-		this.connection = connection;
+public class CreateUserService implements ConsumerService<Order> {
+	
+	private final LocalDatabase database;
+
+	public CreateUserService() throws SQLException {
+		this.database = new LocalDatabase("users_database");
+		this.database.createTableIfNotExists("CREATE TABLE IF NOT EXISTS Users (uuid varchar(255) primary key, email varchar(255))");
+	}
+
+	public static void main(String[] args) {
+		// new ServiceProvider(CreateUserService::new).call();
+		// service runner will create the provider with a factory and call this provider X times
+		new ServiceRunner<Order>(CreateUserService::new).start(1);
+	}
+	
+	public String getTopic() {
+		return "ECOMMERCE_NEW_ORDER";
+	}
+
+	public String getConsumerGroup() {
+		return CreateUserService.class.getSimpleName();
 	}
 
 	public void parse(ConsumerRecord<String, Message<Order>> record) {
@@ -32,33 +48,21 @@ public class CreateUserService {
 	}
 
 	private void insertNewUser(String email) {
-		String createUserSql = "INSERT INTO Users " +
-				"(uuid, email) VALUES (?, ?)";
 		try {
 			String uuid = UUID.randomUUID().toString();
-			
-			PreparedStatement insert = this.connection.prepareStatement(createUserSql);
-			insert.setString(1, uuid);
-			insert.setString(2, email);
-			insert.execute();
-			System.out.println("Created new user with email " + email);
-			
+			this.database.update("INSERT INTO Users (uuid, email) VALUES (?, ?)", uuid, email);
+			System.out.println("Created new user with uuid " + uuid + " and email " + email);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 
 	private boolean isNewUser(String email) {
-		String selectUserSql = "SELECT uuid FROM Users " +
-				"WHERE email = ? LIMIT 1";
 		try {
-			PreparedStatement select = this.connection.prepareStatement(selectUserSql);
-			select.setString(1, email);
-			ResultSet results = select.executeQuery();
+			ResultSet results = this.database.query("SELECT uuid FROM Users WHERE email = ? LIMIT 1", email);
 			boolean exists = results.next();
 			System.out.println("User with email " + email + " exists :: " + exists);
 			return !exists;
-
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;

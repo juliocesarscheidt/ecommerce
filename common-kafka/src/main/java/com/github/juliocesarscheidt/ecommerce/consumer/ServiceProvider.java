@@ -10,7 +10,7 @@ public class ServiceProvider<T> implements Callable<Void> {
 		this.factory = factory;
 	}
 
-	public Void call() {
+	public Void call() throws Exception {
 		ConsumerService<T> consumerService = factory.create();
 		try (KafkaConsumerService<T> service = new KafkaConsumerService<>(consumerService.getTopic(),
 																		consumerService.getConsumerGroup(),

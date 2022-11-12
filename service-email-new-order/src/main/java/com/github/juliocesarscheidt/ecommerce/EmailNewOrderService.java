@@ -13,17 +13,8 @@ public class EmailNewOrderService implements ConsumerService<Order> {
 	public static void main(String[] args) {
 		// new ServiceProvider(EmailNewOrderService::new).call();
 		// service runner will create the provider with a factory and call this provider X times
-		new ServiceRunner<Order>(EmailNewOrderService::new).start(1);
+		new ServiceRunner<Order>(EmailNewOrderService::new).start(2);
 	}
-
-	/*
-	EmailNewOrderService emailService = new EmailNewOrderService();		
-	try (KafkaConsumerService<Order> service = new KafkaConsumerService<>("ECOMMERCE_NEW_ORDER",
-																		emailService.getClass().getSimpleName(),
-																		emailService::parse)) {
-		service.run();
-	}
-	*/
 
 	public String getTopic() {
 		return "ECOMMERCE_NEW_ORDER";

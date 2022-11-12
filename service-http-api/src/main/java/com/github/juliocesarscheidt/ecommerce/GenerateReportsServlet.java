@@ -13,8 +13,8 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public class GenerateReportsServlet extends HttpServlet {
 
-	private static final KafkaProducerService<String> batchProducer = new KafkaProducerService<>();
 	private static final long serialVersionUID = 1L;
+	private static final KafkaProducerService<String> batchProducer = new KafkaProducerService<>();
 
 	@Override
 	public void init(ServletConfig config) throws ServletException {

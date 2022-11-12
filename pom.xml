@@ -104,6 +104,7 @@
 
 	<modules>
 		<module>common-kafka</module>
+		<module>common-database</module>
 		<module>service-email</module>
 		<module>service-fraud</module>
 		<module>service-log</module>

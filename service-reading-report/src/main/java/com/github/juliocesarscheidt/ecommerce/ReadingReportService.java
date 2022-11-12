@@ -17,15 +17,6 @@ public class ReadingReportService implements ConsumerService<User> {
 		new ServiceRunner<User>(ReadingReportService::new).start(2);
 	}
 
-	/*
-	ReadingReportService readingReportService = new ReadingReportService();
-	try (KafkaConsumerService<User> service = new KafkaConsumerService<>("ECOMMERCE_USER_GENERATE_READING_REPORT",
-																		readingReportService.getClass().getSimpleName(),
-																		readingReportService::parse)) {
-		service.run();
-	}
-	*/
-
 	public String getTopic() {
 		return "ECOMMERCE_USER_GENERATE_READING_REPORT";
 	}

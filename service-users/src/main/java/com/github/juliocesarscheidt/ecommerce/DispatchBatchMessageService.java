@@ -1,7 +1,5 @@
 package com.github.juliocesarscheidt.ecommerce;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -9,16 +7,32 @@ import java.util.List;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
+import com.github.juliocesarscheidt.ecommerce.consumer.ConsumerService;
+import com.github.juliocesarscheidt.ecommerce.consumer.ServiceRunner;
 import com.github.juliocesarscheidt.ecommerce.producer.KafkaProducerService;
 
-public class DispatchBatchMessageService {
-
-	private final Connection connection;
+public class DispatchBatchMessageService implements ConsumerService<String> {
 
 	private static final KafkaProducerService<User> userProducer = new KafkaProducerService<>(false);
+	private final LocalDatabase database;
 
-	public DispatchBatchMessageService(Connection connection) {
-		this.connection = connection;
+	public DispatchBatchMessageService() throws SQLException {
+		this.database = new LocalDatabase("users_database");
+		this.database.createTableIfNotExists("CREATE TABLE IF NOT EXISTS Users (uuid varchar(255) primary key, email varchar(255))");
+	}
+	
+	public static void main(String[] args) {
+		// new ServiceProvider(DispatchBatchMessageService::new).call();
+		// service runner will create the provider with a factory and call this provider X times
+		new ServiceRunner<String>(DispatchBatchMessageService::new).start(1);
+	}
+	
+	public String getTopic() {
+		return "ECOMMERCE_DISPATCH_BATCH_MESSAGE";
+	}
+
+	public String getConsumerGroup() {
+		return DispatchBatchMessageService.class.getSimpleName();
 	}
 
 	public void parse(ConsumerRecord<String, Message<String>> record) {
@@ -43,17 +57,14 @@ public class DispatchBatchMessageService {
 	}
 
 	private List<User> getUsers() {
-		String getUsersSql = "SELECT uuid, email FROM Users";
 		try {
 			List<User> users = new ArrayList<>();
-			PreparedStatement select = this.connection.prepareStatement(getUsersSql);
-			ResultSet resultSet = select.executeQuery();
+			String statement = "SELECT uuid, email FROM Users";
+			ResultSet resultSet = this.database.query(statement);
 			while (resultSet.next()) {
-				User user = new User(resultSet.getString("uuid"), resultSet.getString("email"));
-				users.add(user);
+				users.add(new User(resultSet.getString("uuid"), resultSet.getString("email")));
 			}
 			return users;
-
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;

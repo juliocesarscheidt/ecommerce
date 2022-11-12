@@ -24,15 +24,6 @@ public class EmailService implements ConsumerService<Email> {
 		// service runner will create the provider with a factory and call this provider X times
 		new ServiceRunner<Email>(EmailService::new).start(2);
 	}
-	
-	/*
-	EmailService emailService = new EmailService();
-	try (KafkaConsumerService<Email> service = new KafkaConsumerService<>("ECOMMERCE_SEND_EMAIL",
-																		emailService.getClass().getSimpleName(),
-																		emailService::parse)) {
-		service.run();
-	}
-	*/
 
 	public String getTopic() {
 		return "ECOMMERCE_SEND_EMAIL";

@@ -47,7 +47,7 @@ public class KafkaConsumerService<T> implements Closeable {
 			try {
 				ConsumerRecords<String, Message<T>> records = this.consumer.poll(Duration.ofMillis(millisecondsToPoll));
 				if (records.isEmpty()) {
-					System.out.println("[KakfaConsumerService] Any message found, continuing...");
+					// System.out.println("[KakfaConsumerService] Any message found, continuing...");
 					Thread.sleep(100); // sleep 100 ms
 					continue;
 				}
@@ -95,11 +95,13 @@ public class KafkaConsumerService<T> implements Closeable {
 
 	    properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest"); // earliest latest
 
-	    // properties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
-	    properties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true");
+	    properties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true"); // true false
 
-	    // properties.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "100");
+	    properties.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "5000"); // default 5000
+
 	    properties.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "1");
+
+	    // properties.put(ConsumerConfig.ISOLATION_LEVEL_CONFIG, "read_committed"); // read_uncommitted read_committed
 
 	    properties.put(ConsumerConfig.GROUP_ID_CONFIG, consumerName);	 
 	    properties.put(ConsumerConfig.CLIENT_ID_CONFIG, consumerName + "-" + UUID.randomUUID().toString()); 
