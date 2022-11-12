@@ -46,6 +46,7 @@ kafka-consumer-groups --bootstrap-server "$BS" --describe --group "EmailService"
 kafka-consumer-groups --bootstrap-server "$BS" --describe --group "LogService"
 kafka-consumer-groups --bootstrap-server "$BS" --describe --group "DispatchBatchMessageService"
 kafka-consumer-groups --bootstrap-server "$BS" --describe --group "ReadingReportService"
+kafka-consumer-groups --bootstrap-server "$BS" --describe --group "EmailNewOrderService"
 
 
 
@@ -81,7 +82,7 @@ java -jar service-new-order\target\app.jar
 java -jar service-new-order\target\app.jar 10
 
 
-# all modules
+# all modules 
 mvn clean package
 mvn --projects common-kafka,service-email,service-fraud,service-log,service-new-order,service-users --also-make clean package
 

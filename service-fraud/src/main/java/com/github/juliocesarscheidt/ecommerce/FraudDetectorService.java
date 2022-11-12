@@ -4,25 +4,40 @@ import java.math.BigDecimal;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
-import com.github.juliocesarscheidt.ecommerce.consumer.KafkaConsumerService;
+import com.github.juliocesarscheidt.ecommerce.consumer.ConsumerService;
+import com.github.juliocesarscheidt.ecommerce.consumer.ServiceRunner;
 import com.github.juliocesarscheidt.ecommerce.producer.KafkaProducerService;
 
-public class FraudDetectorService {
+public class FraudDetectorService implements ConsumerService<Order> {
 	
 	private final BigDecimal ORDER_AMOUNT_THRESHOLD = new BigDecimal("4000");
 
 	private final KafkaProducerService<Order> orderProducer = new KafkaProducerService<>();
 
 	public static void main(String[] args) {
-		FraudDetectorService fraudService = new FraudDetectorService();		
-		try (KafkaConsumerService<Order> service = new KafkaConsumerService<>("ECOMMERCE_NEW_ORDER",
-																			fraudService.getClass().getSimpleName(),
-																			fraudService::parse)) {
-			service.run();
-		}
+		// new ServiceProvider(FraudDetectorService::new).call();
+		// service runner will create the provider with a factory and call this provider X times
+		new ServiceRunner<Order>(FraudDetectorService::new).start(1);
 	}
 
-	private void parse(ConsumerRecord<String, Message<Order>> record) {
+	/*
+	FraudDetectorService fraudService = new FraudDetectorService();		
+	try (KafkaConsumerService<Order> service = new KafkaConsumerService<>("ECOMMERCE_NEW_ORDER",
+																		fraudService.getClass().getSimpleName(),
+																		fraudService::parse)) {
+		service.run();
+	}
+	*/
+	
+	public String getTopic() {
+		return "ECOMMERCE_NEW_ORDER";
+	}
+
+	public String getConsumerGroup() {
+		return FraudDetectorService.class.getSimpleName();
+	}
+
+	public void parse(ConsumerRecord<String, Message<Order>> record) {
 		System.out.println("[INFO] key " + record.key()
 						  + " | value " + record.value()
 						  + " | topic " + record.topic()

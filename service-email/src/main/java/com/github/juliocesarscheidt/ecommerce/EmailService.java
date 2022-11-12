@@ -2,7 +2,8 @@ package com.github.juliocesarscheidt.ecommerce;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
-import com.github.juliocesarscheidt.ecommerce.consumer.KafkaConsumerService;
+import com.github.juliocesarscheidt.ecommerce.consumer.ConsumerService;
+import com.github.juliocesarscheidt.ecommerce.consumer.ServiceRunner;
 
 import java.util.Properties;
 
@@ -16,9 +17,32 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-public class EmailService {
+public class EmailService implements ConsumerService<Email> {
 
-	private void parse(ConsumerRecord<String, com.github.juliocesarscheidt.ecommerce.Message<Email>> record) {
+	public static void main(String[] args) {
+		// new ServiceProvider(EmailService::new).call();
+		// service runner will create the provider with a factory and call this provider X times
+		new ServiceRunner<Email>(EmailService::new).start(2);
+	}
+	
+	/*
+	EmailService emailService = new EmailService();
+	try (KafkaConsumerService<Email> service = new KafkaConsumerService<>("ECOMMERCE_SEND_EMAIL",
+																		emailService.getClass().getSimpleName(),
+																		emailService::parse)) {
+		service.run();
+	}
+	*/
+
+	public String getTopic() {
+		return "ECOMMERCE_SEND_EMAIL";
+	}
+
+	public String getConsumerGroup() {
+		return EmailService.class.getSimpleName();
+	}
+
+	public void parse(ConsumerRecord<String, com.github.juliocesarscheidt.ecommerce.Message<Email>> record) {
 		System.out.println("[INFO] key " + record.key()
 						  + " | value " + record.value()
 						  + " | topic " + record.topic()
@@ -31,15 +55,6 @@ public class EmailService {
 		String emailBody = emailContent.getBody();
 
 		sendEmail(emailDestination, emailBody);
-	}
-
-	public static void main(String[] args) {
-		EmailService emailService = new EmailService();
-		try (KafkaConsumerService<Email> service = new KafkaConsumerService<>("ECOMMERCE_SEND_EMAIL",
-																			emailService.getClass().getSimpleName(),
-																			emailService::parse)) {
-			service.run();
-		}
 	}
 
 	private void sendEmail(String emailDestination, String emailBody) {

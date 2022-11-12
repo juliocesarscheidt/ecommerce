@@ -93,7 +93,7 @@ public class KafkaConsumerService<T> implements Closeable {
 		// properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
 		properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, GsonDeserializer.class.getName());
 
-	    properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+	    properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest"); // earliest latest
 
 	    // properties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
 	    properties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true");

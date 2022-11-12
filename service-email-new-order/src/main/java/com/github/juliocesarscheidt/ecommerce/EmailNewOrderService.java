@@ -2,23 +2,38 @@ package com.github.juliocesarscheidt.ecommerce;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
-import com.github.juliocesarscheidt.ecommerce.consumer.KafkaConsumerService;
+import com.github.juliocesarscheidt.ecommerce.consumer.ConsumerService;
+import com.github.juliocesarscheidt.ecommerce.consumer.ServiceRunner;
 import com.github.juliocesarscheidt.ecommerce.producer.KafkaProducerService;
 
-public class EmailNewOrderService {
+public class EmailNewOrderService implements ConsumerService<Order> {
 	
 	private static final KafkaProducerService<Email> emailProducer = new KafkaProducerService<>();
 
 	public static void main(String[] args) {
-		EmailNewOrderService emailService = new EmailNewOrderService();		
-		try (KafkaConsumerService<Order> service = new KafkaConsumerService<>("ECOMMERCE_NEW_ORDER",
-																			emailService.getClass().getSimpleName(),
-																			emailService::parse)) {
-			service.run();
-		}
+		// new ServiceProvider(EmailNewOrderService::new).call();
+		// service runner will create the provider with a factory and call this provider X times
+		new ServiceRunner<Order>(EmailNewOrderService::new).start(1);
 	}
 
-	private void parse(ConsumerRecord<String, Message<Order>> record) {
+	/*
+	EmailNewOrderService emailService = new EmailNewOrderService();		
+	try (KafkaConsumerService<Order> service = new KafkaConsumerService<>("ECOMMERCE_NEW_ORDER",
+																		emailService.getClass().getSimpleName(),
+																		emailService::parse)) {
+		service.run();
+	}
+	*/
+
+	public String getTopic() {
+		return "ECOMMERCE_NEW_ORDER";
+	}
+
+	public String getConsumerGroup() {
+		return EmailNewOrderService.class.getSimpleName();
+	}
+
+	public void parse(ConsumerRecord<String, Message<Order>> record) {
 		System.out.println("[INFO] key " + record.key()
 						  + " | value " + record.value()
 						  + " | topic " + record.topic()
