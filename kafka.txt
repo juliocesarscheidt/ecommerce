@@ -55,14 +55,18 @@ kafka-consumer-groups --bootstrap-server "$BS" --describe --group "EmailNewOrder
 kafka-run-class kafka.tools.GetOffsetShell --broker-list "$BS" --topic "$TOPIC_NAME"
 
 
-kafka-console-consumer --bootstrap-server "$BS" --topic "$TOPIC_NAME" --property "parse.key=true" --property "print.key=true" --property key.separator=":" --from-beginning
+kafka-console-consumer --bootstrap-server "$BS" --topic "kafka_topic_csv" --property "parse.key=true" --property "print.key=true" --property key.separator=":" --from-beginning
 
 kafka-console-consumer --bootstrap-server "$BS" --topic "$TOPIC_NAME" --property "parse.key=true" --property "print.key=true" --property key.separator=":"
 
 
+kafka-console-consumer --bootstrap-server "$BS" --topic "$TOPIC_NAME" --group "CreateUserService" --max-messages 100 --from-beginning
+
 kafka-console-consumer --bootstrap-server "$BS" --topic "$TOPIC_NAME" --group "FraudDetectorService-7e844a78-a3e6-4336-a75b-6bdc6c25b2f6-c1503358-5fc2-4220-94b7-a8c14e1ed1b0" --from-beginning
 
+
 kafka-consumer-groups --bootstrap-server "$BS" --topic "$TOPIC_NAME" --group "FraudDetectorService-7e844a78-a3e6-4336-a75b-6bdc6c25b2f6-c1503358-5fc2-4220-94b7-a8c14e1ed1b0" --reset-offsets --to-latest --execute
+
 kafka-consumer-groups --bootstrap-server "$BS" --topic "$TOPIC_NAME" --group "consumer-FraudDetectorService-1-5a58daf1-b075-4cb6-8750-23eee0ef43fd" --reset-offsets --to-latest --execute
 
 
