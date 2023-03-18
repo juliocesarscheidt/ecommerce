@@ -1,117 +1,125 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.github.juliocesarscheidt</groupId>
-	<artifactId>ecommerce</artifactId>
-	<name>ecommerce</name>
-	<version>0.0.1-SNAPSHOT</version>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.github.juliocesarscheidt</groupId>
+  <artifactId>ecommerce</artifactId>
+  <name>ecommerce</name>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <!--<packaging>jar</packaging>-->
 
-	<packaging>pom</packaging>
-	<!--<packaging>jar</packaging>-->
+  <properties>
+    <java.version>12</java.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+  </properties>
 
-	<properties>
-		<java.version>12</java.version>
-	    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-	</properties>
+  <build>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.10.0</version>
+          <configuration>
+            <source>${java.version}</source>
+            <target>${java.version}</target>
+          </configuration>
+        </plugin>
 
-	<build>
-    	<plugins>
-    		<plugin>
-		        <groupId>org.apache.maven.plugins</groupId>
-   				<artifactId>maven-compiler-plugin</artifactId>
-   				<version>3.10.0</version>
-		        <configuration>
-		          <source>${java.version}</source>
-		          <target>${java.version}</target>
-		        </configuration>
-		      </plugin>
+        <!--
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>3.0.2</version>
+          <configuration>
+            <archive>
+              <manifest>
+                <mainClass>com.github.juliocesarscheidt.ecommerce.NewOrderService</mainClass>
+              </manifest>
+            </archive>
+          </configuration>
+        </plugin>
+        -->
 
-			  <!--
-		      <plugin>
-		        <groupId>org.apache.maven.plugins</groupId>
-		        <artifactId>maven-jar-plugin</artifactId>
-		        <version>3.0.2</version>
-		        <configuration>
-		          <archive>
-		            <manifest>
-		              <mainClass>com.github.juliocesarscheidt.ecommerce.NewOrderService</mainClass>
-		            </manifest>
-		          </archive>
-		        </configuration>
-		      </plugin>
-		      -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-shade-plugin</artifactId>
+          <version>3.2.4</version>
+          <executions>
+            <execution>
+              <phase>package</phase>
+              <goals>
+                <goal>shade</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
 
-		      <plugin>
-		        <groupId>org.apache.maven.plugins</groupId>
-		        <artifactId>maven-shade-plugin</artifactId>
-		        <version>3.2.4</version>
-		        <executions>
-		          <execution>
-		            <phase>package</phase>
-		            <goals>
-		              <goal>shade</goal>
-		            </goals>
-		          </execution>
-		        </executions>
-		      </plugin>
-    	</plugins>
-
-    	<finalName>app</finalName>
+      <finalName>app</finalName>
     </build>
 
     <dependencyManagement>
-    	<dependencies></dependencies>
+      <dependencies></dependencies>
     </dependencyManagement>
 
-	<dependencies>
-		<dependency>
-		    <groupId>org.apache.maven.plugins</groupId>
-		    <artifactId>maven-compiler-plugin</artifactId>
-		    <version>3.10.0</version>
-		</dependency>
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-compiler-plugin</artifactId>
+      <version>3.10.0</version>
+    </dependency>
 
-		<dependency>
-		    <groupId>org.apache.maven.plugins</groupId>
-		    <artifactId>maven-jar-plugin</artifactId>
-		    <version>3.0.2</version>
-		</dependency>
+    <dependency>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-jar-plugin</artifactId>
+      <version>3.0.2</version>
+  </dependency>
 
-		<dependency>
-		    <groupId>org.apache.maven.plugins</groupId>
-		    <artifactId>maven-shade-plugin</artifactId>
-		    <version>3.2.4</version>
-		</dependency>
+    <dependency>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-shade-plugin</artifactId>
+      <version>3.2.4</version>
+    </dependency>
 
-		<dependency>
-		  <groupId>com.google.code.gson</groupId>
-		  <artifactId>gson</artifactId>
-		  <version>2.8.5</version>
-		</dependency>
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.8.5</version>
+    </dependency>
 
-		<dependency>
-	      <groupId>org.slf4j</groupId>
-	      <artifactId>slf4j-simple</artifactId>
-	      <version>1.7.29</version>
-	    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>1.7.29</version>
+    </dependency>
 
-	    <!-- https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients -->
-		<dependency>
-		    <groupId>org.apache.kafka</groupId>
-		    <artifactId>kafka-clients</artifactId>
-		    <version>3.0.0</version>
-		</dependency>
-    </dependencies>
+    <!-- https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients -->
+    <dependency>
+      <groupId>org.apache.kafka</groupId>
+      <artifactId>kafka-clients</artifactId>
+      <version>3.0.0</version>
+    </dependency>
+  </dependencies>
 
-	<modules>
-		<module>common-kafka</module>
-		<module>common-database</module>
-		<module>service-email</module>
-		<module>service-fraud</module>
-		<module>service-log</module>
-		<module>service-new-order</module>
-		<module>service-users</module>
-		<module>service-http-api</module>
-		<module>service-reading-report</module>
-		<module>service-email-new-order</module>
-	</modules>
+  <modules>
+    <module>common-kafka</module>
+    <module>common-database</module>
+    <module>service-email</module>
+    <module>service-fraud</module>
+    <module>service-log</module>
+    <module>service-new-order</module>
+    <module>service-users</module>
+    <module>service-http-api</module>
+    <module>service-reading-report</module>
+    <module>service-email-new-order</module>
+  </modules>
+  
+  <developers>
+  <developer>
+    <email>julio@blackdevs.com.br</email>
+    <name>Julio Scheidt</name>
+    <url>https://github.com/juliocesarscheidt</url>
+    <id>juliocesarscheidt</id>
+  </developer>
+</developers>
 </project>
